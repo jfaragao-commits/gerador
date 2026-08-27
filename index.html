@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Gerador Slonimsky v3 — Padrão Intervalar + Transposição</title>
+<title>Gerador Slonimsky — Completo + Modo Ditado Melódico</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@500;700&display=swap" rel="stylesheet">
 <style>
@@ -14,6 +14,7 @@
     --line:#33312c;
     --panel:#161613;
     --danger:#b5533f;
+    --accent-blue:#3f88b5;
   }
   *{box-sizing:border-box;}
   body{
@@ -48,7 +49,7 @@
     color:#8a877c;
     letter-spacing:1px;
     text-transform:uppercase;
-    max-width:260px;
+    max-width:300px;
     text-align:right;
     line-height:1.5;
   }
@@ -71,7 +72,7 @@
     color:var(--gold);
     margin-bottom:6px;
   }
-  select,input[type=number]{
+  select,input[type=number],input[type=text]{
     width:100%;
     background:#000;
     color:var(--paper);
@@ -139,9 +140,44 @@
     text-transform:uppercase;
     padding:13px 26px;
     cursor:pointer;
+    width: 100%;
   }
   button.generate:hover{background:#e0b544;}
   button.generate:disabled{background:#5b5030;color:#8a8574;cursor:not-allowed;}
+
+  .dictation-control-bar {
+    background: #1f1e19;
+    border: 1px solid var(--gold-dim);
+    padding: 16px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .dictation-btns {
+    display: flex;
+    gap: 10px;
+  }
+  .btn-action {
+    background: #000;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    padding: 10px 16px;
+    font-family: 'IBM Plex Mono',monospace;
+    font-size: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  .btn-action:hover { background: var(--gold); color: #0D0D0D; }
+  .btn-reveal {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+  }
+  .btn-reveal:hover { background: var(--accent-blue); color: #fff; }
+
   .meta{
     display:flex;
     justify-content:space-between;
@@ -180,6 +216,16 @@
     font-size:16px;
     letter-spacing:0.5px;
     word-break:break-word;
+    transition: filter 0.3s;
+  }
+  .hidden-notes .note-line {
+    filter: blur(6px);
+    user-select: none;
+    color: transparent;
+    background: #222;
+  }
+  .hidden-notes .intervals, .hidden-notes .classif {
+    display: none;
   }
   .note-line .pillar{color:var(--gold);font-weight:600;}
   .note-line .interp{color:#c9c6ba;}
@@ -231,7 +277,7 @@
 <div class="wrap">
   <header>
     <h1>Gerador <span>Slonimsky</span> v3</h1>
-    <div class="subtitle">O padrão intervalar é o objeto gerador; os pilares são a consequência de sua transposição</div>
+    <div class="subtitle">Edição Completa com Modo de Treino para Ditado Melódico</div>
   </header>
 
   <div class="panel">
@@ -245,9 +291,16 @@
         <label for="startNote">Nota inicial</label>
         <select id="startNote"></select>
       </div>
+      <div>
+        <label for="appMode">Modo de Operação</label>
+        <select id="appMode">
+          <option value="dictation">Modo Ditado (Ocultar & Sortear)</option>
+          <option value="explore">Modo Exploração Livre (Listar tudo)</option>
+        </select>
+      </div>
     </div>
 
-    <!-- MODO: PADRÃO INTERVALAR (v3, motor principal) -->
+    <!-- MODO: PADRÃO INTERVALAR -->
     <div id="patternPanel">
       <label for="patternInput">Padrão intervalar (semitons, separados por espaço — use sinal para descer)</label>
       <input type="text" id="patternInput" value="+1 +3" placeholder="ex: +1 +3  ou  +4 -1 +4 -1">
@@ -263,7 +316,7 @@
       <div class="grid" style="margin-top:16px;">
         <div>
           <label for="transposeStep">Transposição a cada repetição (semitons)</label>
-          <input type="number" id="transposeStep" placeholder="deixe em branco = automático (soma do padrão)">
+          <input type="number" id="transposeStep" placeholder="automático">
         </div>
         <div>
           <label for="repeatCount">Número de repetições</label>
@@ -273,7 +326,7 @@
       <div class="hint" id="patternHint"></div>
     </div>
 
-    <!-- MODO: PILARES (v2, exploração combinatória exaustiva) -->
+    <!-- MODO: PILARES -->
     <div id="pillarsPanel" style="display:none;">
       <div class="grid">
         <div>
@@ -300,14 +353,14 @@
       </div>
       <div class="toggle-row">
         <input type="checkbox" id="samePattern" checked>
-        <span id="sameLabel">Mesmo padrão de interpolação em todos os intervalos (o método original de Slonimsky)</span>
+        <span>Mesmo padrão de interpolação em todos os intervalos</span>
       </div>
       <div class="hint" id="hintText"></div>
     </div>
 
     <div class="grid" style="margin-top:16px;" id="transformRow">
       <div>
-        <label for="transformMode">Transformação (modo pilares) / gerado automaticamente no modo padrão</label>
+        <label for="transformMode">Transformação</label>
         <select id="transformMode">
           <option value="original">Original</option>
           <option value="retrograde">Retrógrado</option>
@@ -317,7 +370,19 @@
       </div>
     </div>
 
-    <button class="generate" id="genBtn">Gerar melodias</button>
+    <button class="generate" id="genBtn">Gerar / Sortear Melodias</button>
+  </div>
+
+  <!-- BARRA DE CONTROLE DO DITADO -->
+  <div class="dictation-control-bar" id="dictationBar" style="display:none;">
+    <div>
+      <strong style="color:var(--gold); font-size: 13px;">TREINO DE DITADO MELÓDICO</strong>
+      <div style="font-size:11px; color:#a09d90; margin-top:2px;">Ouça o áudio, transcreva no papel e revele quando quiser conferir.</div>
+    </div>
+    <div class="dictation-btns">
+      <button class="btn-action" id="replayBtn">🔊 Ouvir Novamente</button>
+      <button class="btn-action btn-reveal" id="revealBtn">👁️ Revelar Resposta</button>
+    </div>
   </div>
 
   <div id="resultsMeta"></div>
@@ -326,9 +391,8 @@
 
 <script>
 const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
-const CAP = 300; // texto é leve, então o limite de exibição pode ser mais alto
+const CAP = 300; 
 
-// populate start note select
 const startSel = document.getElementById('startNote');
 NOTE_NAMES.forEach((n,i)=>{
   const o = document.createElement('option');
@@ -345,6 +409,10 @@ const hintText = document.getElementById('hintText');
 const genBtn = document.getElementById('genBtn');
 const resultsDiv = document.getElementById('results');
 const resultsMeta = document.getElementById('resultsMeta');
+const appModeSel = document.getElementById('appMode');
+const dictationBar = document.getElementById('dictationBar');
+const replayBtn = document.getElementById('replayBtn');
+const revealBtn = document.getElementById('revealBtn');
 
 const patternInput = document.getElementById('patternInput');
 const transposeStepInput = document.getElementById('transposeStep');
@@ -357,6 +425,7 @@ const modeBtnPillars = document.getElementById('modeBtnPillars');
 const transformRow = document.getElementById('transformRow');
 
 let currentMode = 'pattern';
+let activeDictationNotes = null;
 
 function setMode(mode){
   currentMode = mode;
@@ -364,7 +433,6 @@ function setMode(mode){
   modeBtnPillars.classList.toggle('active', mode==='pillars');
   patternPanel.style.display = mode==='pattern' ? '' : 'none';
   pillarsPanel.style.display = mode==='pillars' ? '' : 'none';
-  transformRow.style.display = mode==='pillars' ? '' : 'none';
   if(mode==='pattern') updatePatternHint();
 }
 modeBtnPattern.addEventListener('click', ()=>setMode('pattern'));
@@ -384,7 +452,7 @@ function parsePattern(str){
 function updatePatternHint(){
   const pattern = parsePattern(patternInput.value);
   if(pattern.length === 0){
-    patternHint.textContent = 'Digite ao menos um intervalo (em semitons, com sinal).';
+    patternHint.textContent = 'Digite ao menos um intervalo.';
     return;
   }
   const sum = pattern.reduce((a,b)=>a+b,0);
@@ -392,9 +460,8 @@ function updatePatternHint(){
   const reps = parseInt(repeatCountInput.value || 1, 10);
   const totalSpan = step * reps;
   const closesOctave = totalSpan !== 0 && totalSpan % 12 === 0;
-  patternHint.textContent = `Célula de ${pattern.length} intervalo(s), soma ${sum>=0?'+':''}${sum} semitons. `
-    + `Transposição efetiva: ${step>=0?'+':''}${step} por repetição × ${reps} = ${totalSpan>=0?'+':''}${totalSpan} semitons no total`
-    + (closesOctave ? ' (fecha em oitava(s) exata — os pontos de transposição funcionam como pilares simétricos).' : ' (não fecha em oitava exata — cadeia livre, sem simetria octaval).');
+  patternHint.textContent = `Célula de ${pattern.length} intervalo(s), soma ${sum>=0?'+':''}${sum}. Transposição: ${step>=0?'+':''}${step} × ${reps} = ${totalSpan}`
+    + (closesOctave ? ' (fecha em oitava exata).' : ' (cadeia livre).');
 }
 patternInput.addEventListener('input', updatePatternHint);
 transposeStepInput.addEventListener('input', updatePatternHint);
@@ -417,7 +484,6 @@ function buildFromPattern(start, pattern, transposeStep, repeatCount){
 }
 
 function factorial(n){ let r=1; for(let i=2;i<=n;i++) r*=i; return r; }
-
 function permutations(arr){
   if(arr.length<=1) return [arr.slice()];
   const result=[];
@@ -427,12 +493,11 @@ function permutations(arr){
   }
   return result;
 }
-
 function gapSize(){ return 12 / parseInt(divisionSel.value); }
 
 function refreshKOptions(){
   const gap = gapSize();
-  const maxK = gap - 1; // interior semitone slots in a gap
+  const maxK = gap - 1;
   kSel.innerHTML = '';
   for(let k=0;k<=maxK;k++){
     const o = document.createElement('option');
@@ -467,14 +532,8 @@ function updateHint(){
   const interior = gap - 1;
   const orderMult = orderSel.value === 'zigzag' ? factorial(k) : 1;
   const combosPerGap = binomial(interior, k) * orderMult;
-  let total;
-  if(sameCheckbox.checked){
-    total = combosPerGap;
-  } else {
-    total = Math.pow(combosPerGap, n);
-  }
-  hintText.textContent = `${n} pilares, intervalo de ${gap} semitons entre eles, ${interior} posição(ões) interna(s) por intervalo. `
-    + `Combinações possíveis: ${total.toLocaleString('pt-BR')}` + (total > CAP ? ` (mostrando as primeiras ${CAP})` : '');
+  let total = sameCheckbox.checked ? combosPerGap : Math.pow(combosPerGap, n);
+  hintText.textContent = `${n} pilares, intervalo de ${gap} semitons, ${interior} posição(ões) interna(s). Combinações: ${total.toLocaleString('pt-BR')}`;
 }
 
 function binomial(n,k){
@@ -491,55 +550,46 @@ sameCheckbox.addEventListener('change', updateHint);
 refreshKOptions();
 setMode('pattern');
 
-// ---- melody generation ----
 function buildMelodySameCombo(start, n, gap, combo){
-  // combo: array of interior offsets (1..gap-1) chosen, ascending
-  const notes = []; // absolute semitone offsets from start (not mod 12), with tag pillar/interp
-  for(let g=0; g<n; g++){
-    const pillarOffset = g*gap;
-    notes.push({offset: start+pillarOffset, pillar:true});
-    combo.forEach(c=>{
-      notes.push({offset: start+pillarOffset+c, pillar:false});
-    });
-  }
-  notes.push({offset: start + n*gap, pillar:true}); // octave close
-  return notes;
-}
-
-function buildMelodyVaryCombo(start, n, gap, comboPerGap){
-  // comboPerGap: array length n, each an array of interior offsets for that gap
   const notes = [];
   for(let g=0; g<n; g++){
     const pillarOffset = g*gap;
     notes.push({offset: start+pillarOffset, pillar:true});
-    comboPerGap[g].forEach(c=>{
-      notes.push({offset: start+pillarOffset+c, pillar:false});
-    });
+    combo.forEach(c => notes.push({offset: start+pillarOffset+c, pillar:false}));
+  }
+  notes.push({offset: start + n*gap, pillar:true});
+  return notes;
+}
+
+function buildMelodyVaryCombo(start, n, gap, comboPerGap){
+  const notes = [];
+  for(let g=0; g<n; g++){
+    const pillarOffset = g*gap;
+    notes.push({offset: start+pillarOffset, pillar:true});
+    comboPerGap[g].forEach(c => notes.push({offset: start+pillarOffset+c, pillar:false}));
   }
   notes.push({offset: start + n*gap, pillar:true});
   return notes;
 }
 
 function cartesianProduct(arrays, cap){
-  // arrays: array of arrays. returns up to `cap` combinations, each an array picking one item per input array
   let results = [[]];
   for(const arr of arrays){
     const next = [];
     for(const prefix of results){
       for(const item of arr){
         next.push(prefix.concat([item]));
-        if(next.length >= cap * 50) break; // safety valve, trimmed later
+        if(next.length >= cap * 50) break;
       }
     }
     results = next;
-    if(results.length > cap * 200) break; // hard safety valve for huge spaces
+    if(results.length > cap * 200) break;
   }
   return results.slice(0, cap);
 }
 
 function noteName(offset){
-  const idx = ((offset % 12) + 12) % 12;
-  return NOTE_NAMES[idx];
+  return NOTE_NAMES[((offset % 12) + 12) % 12];
 }
 
 function renderMelody(notes){
@@ -554,16 +604,11 @@ function intervalString(notes){
   return ivs.map(v => v>=0 ? '+'+v : String(v)).join(' ');
 }
 
-// ---- transformações (retrógrado / inversão / retrógrado-invertido) ----
 function applyTransform(notes, mode){
   if(mode === 'original') return notes;
   const first = notes[0].offset;
-  if(mode === 'retrograde'){
-    return notes.slice().reverse();
-  }
-  if(mode === 'inversion'){
-    return notes.map(n => ({offset: 2*first - n.offset, pillar:n.pillar}));
-  }
+  if(mode === 'retrograde') return notes.slice().reverse();
+  if(mode === 'inversion') return notes.map(n => ({offset: 2*first - n.offset, pillar:n.pillar}));
   if(mode === 'retro-inv'){
     const inv = notes.map(n => ({offset: 2*first - n.offset, pillar:n.pillar}));
     return inv.slice().reverse();
@@ -571,7 +616,6 @@ function applyTransform(notes, mode){
   return notes;
 }
 
-// ---- classificação estrutural (coleções simétricas conhecidas) ----
 const SYMMETRIC_SETS = [
   {name:'tons inteiros', pcs:[0,2,4,6,8,10]},
   {name:'tons inteiros', pcs:[1,3,5,7,9,11]},
@@ -586,96 +630,132 @@ const SYMMETRIC_SETS = [
 function classify(notes){
   const pcSet = [...new Set(notes.map(n => ((n.offset%12)+12)%12))];
   const matches = SYMMETRIC_SETS.filter(s => pcSet.every(pc => s.pcs.includes(pc)));
-  if(matches.length === 0) return 'sem coleção simétrica específica (cromático/misto)';
-  const uniqueNames = [...new Set(matches.map(m=>m.name))];
-  return 'subconjunto de: ' + uniqueNames.join(', ');
+  if(matches.length === 0) return 'sem coleção simétrica específica';
+  return 'subconjunto de: ' + [...new Set(matches.map(m=>m.name))].join(', ');
 }
 
-// ---- audio ----
 let audioCtx = null;
 function playMelody(notes){
   if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  const baseMidi = 60; // C4 reference; start note offset already baked into notes[].offset relative to chosen start pitch class
-  let t = audioCtx.currentTime;
-  const noteDur = 0.85; // duração de cada nota, em segundos
-  notes.forEach((n,i)=>{
-    const midi = baseMidi + n.offset;
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+  let t = audioCtx.currentTime + 0.05;
+  const noteDur = 0.75; 
+  notes.forEach((n)=>{
+    const midi = 60 + n.offset;
     const freq = 440 * Math.pow(2, (midi-69)/12);
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
-    osc.type = 'sine';
+    osc.type = 'triangle';
     osc.frequency.value = freq;
     gain.gain.setValueAtTime(0.0001, t);
-    gain.gain.exponentialRampToValueAtTime(0.3, t+0.03);
+    gain.gain.exponentialRampToValueAtTime(0.25, t+0.04);
     gain.gain.exponentialRampToValueAtTime(0.0001, t+noteDur);
     osc.connect(gain).connect(audioCtx.destination);
     osc.start(t);
-    osc.stop(t+noteDur+0.03);
-    t += noteDur*0.98;
+    osc.stop(t+noteDur+0.05);
+    t += noteDur * 0.95;
   });
 }
 
 genBtn.addEventListener('click', ()=>{
+  const isDictation = appModeSel.value === 'dictation';
+  dictationBar.style.display = isDictation ? 'flex' : 'none';
+
   if(currentMode === 'pattern'){
-    generatePatternMode();
+    const start = parseInt(startSel.value);
+    const pattern = parsePattern(patternInput.value);
+    if(pattern.length === 0){
+      resultsMeta.innerHTML = '';
+      resultsDiv.innerHTML = '<div class="empty">Digite um padrão intervalar válido</div>';
+      return;
+    }
+    const sum = pattern.reduce((a,b)=>a+b,0);
+    const step = transposeStepInput.value ? parseInt(transposeStepInput.value,10) : sum;
+    const reps = Math.max(1, parseInt(repeatCountInput.value || 1, 10));
+    const base = buildFromPattern(start, pattern, step, reps);
+
+    if(isDictation){
+      activeDictationNotes = base;
+      renderDictationResults(base);
+      playMelody(base);
+    } else {
+      const transformMode = transformSel.value;
+      const notes = applyTransform(base, transformMode);
+      renderExploreResults([notes], 1);
+    }
   } else {
-    generatePillarsMode();
+    // Modo Pilares Completo
+    const start = parseInt(startSel.value);
+    const n = parseInt(divisionSel.value);
+    const gap = gapSize();
+    const k = parseInt(kSel.value || 0);
+    const interior = Array.from({length: gap-1}, (_,i)=>i+1);
+    const transformMode = transformSel.value;
+    const rawCombos = combinations(interior, k);
+    const variantsPerGap = orderSel.value === 'zigzag' ? rawCombos.flatMap(c => permutations(c)) : rawCombos;
+
+    let melodies = [];
+    let totalCount = 0;
+
+    if(sameCheckbox.checked){
+      totalCount = variantsPerGap.length;
+      const use = isDictation ? [variantsPerGap[Math.floor(Math.random() * variantsPerGap.length)]] : variantsPerGap.slice(0, CAP);
+      melodies = use.map(c => applyTransform(buildMelodySameCombo(start, n, gap, c), transformMode));
+    } else {
+      const perGapArrays = Array.from({length:n}, ()=>variantsPerGap);
+      totalCount = Math.pow(variantsPerGap.length, n);
+      if(isDictation){
+        const randomComboSet = Array.from({length:n}, ()=>variantsPerGap[Math.floor(Math.random() * variantsPerGap.length)]);
+        melodies = [applyTransform(buildMelodyVaryCombo(start, n, gap, randomComboSet), transformMode)];
+      } else {
+        const combos = cartesianProduct(perGapArrays, CAP);
+        melodies = combos.map(comboSet => applyTransform(buildMelodyVaryCombo(start, n, gap, comboSet), transformMode));
+      }
+    }
+
+    if(isDictation && melodies.length > 0){
+      activeDictationNotes = melodies[0];
+      renderDictationResults(melodies[0]);
+      playMelody(melodies[0]);
+    } else {
+      renderExploreResults(melodies, totalCount);
+    }
   }
 });
 
-function generatePatternMode(){
-  const start = parseInt(startSel.value);
-  const pattern = parsePattern(patternInput.value);
-  if(pattern.length === 0){
-    resultsMeta.innerHTML = '';
-    resultsDiv.innerHTML = '<div class="empty">Digite um padrão intervalar válido</div>';
-    return;
-  }
-  const sum = pattern.reduce((a,b)=>a+b,0);
-  const step = transposeStepInput.value ? parseInt(transposeStepInput.value,10) : sum;
-  const reps = Math.max(1, parseInt(repeatCountInput.value || 1, 10));
+replayBtn.addEventListener('click', ()=>{
+  if(activeDictationNotes) playMelody(activeDictationNotes);
+});
 
-  const base = buildFromPattern(start, pattern, step, reps);
-  const forms = [
-    {label:'Original', notes: applyTransform(base,'original')},
-    {label:'Retrógrado', notes: applyTransform(base,'retrograde')},
-    {label:'Inversão', notes: applyTransform(base,'inversion')},
-    {label:'Retrógrado-invertido', notes: applyTransform(base,'retro-inv')},
-  ];
-  renderResults(forms.map(f=>f.notes), forms.length, forms.map(f=>f.label));
+revealBtn.addEventListener('click', ()=>{
+  const resultBox = document.querySelector('.result');
+  if(resultBox) {
+    resultBox.classList.remove('hidden-notes');
+    revealBtn.textContent = '✔️ Resposta Revelada';
+    revealBtn.disabled = true;
+  }
+});
+
+function renderDictationResults(notes){
+  resultsMeta.innerHTML = `<div class="legend"><span class="p"><span class="dot"></span>Nota de referência/pilar</span></div>`;
+  resultsDiv.innerHTML = `
+    <div class="result hidden-notes">
+      <div class="idx">#1</div>
+      <div class="notes">
+        <div class="form-label">Transcrição Oculta (Modo Ditado)</div>
+        <div class="note-line">${renderMelody(notes)}</div>
+        <div class="intervals">padrão intervalar: ${intervalString(notes)}</div>
+        <div class="classif">${classify(notes)}</div>
+      </div>
+      <button class="play-btn" title="Tocar" id="inlinePlay">▶</button>
+    </div>
+  `;
+  document.getElementById('inlinePlay').addEventListener('click', ()=>playMelody(notes));
+  revealBtn.textContent = '👁️ Revelar Resposta';
+  revealBtn.disabled = false;
 }
 
-function generatePillarsMode(){
-  const start = parseInt(startSel.value);
-  const n = parseInt(divisionSel.value);
-  const gap = gapSize();
-  const k = parseInt(kSel.value || 0);
-  const interior = Array.from({length: gap-1}, (_,i)=>i+1); // positions 1..gap-1
-  const transformMode = transformSel.value;
-
-  const rawCombos = combinations(interior, k);
-  const variantsPerGap = orderSel.value === 'zigzag'
-    ? rawCombos.flatMap(c => permutations(c))
-    : rawCombos; // já em ordem crescente por construção
-
-  let melodies = [];
-  let totalCount = 0;
-
-  if(sameCheckbox.checked){
-    totalCount = variantsPerGap.length;
-    const use = variantsPerGap.slice(0, CAP);
-    melodies = use.map(c => applyTransform(buildMelodySameCombo(start, n, gap, c), transformMode));
-  } else {
-    const perGapArrays = Array.from({length:n}, ()=>variantsPerGap);
-    totalCount = Math.pow(variantsPerGap.length, n);
-    const combos = cartesianProduct(perGapArrays, CAP);
-    melodies = combos.map(comboSet => applyTransform(buildMelodyVaryCombo(start, n, gap, comboSet), transformMode));
-  }
-
-  renderResults(melodies, totalCount);
-}
-
-function renderResults(melodies, totalCount, labels){
+function renderExploreResults(melodies, totalCount){
   resultsMeta.innerHTML = '';
   if(melodies.length === 0){
     resultsDiv.innerHTML = '<div class="empty">Nenhuma combinação para esses parâmetros</div>';
@@ -684,32 +764,21 @@ function renderResults(melodies, totalCount, labels){
 
   const legend = document.createElement('div');
   legend.className = 'legend';
-  legend.innerHTML = `<span class="p"><span class="dot"></span>pilar (ponto de transposição)</span><span class="i"><span class="dot"></span>nota do padrão intervalar</span>`;
+  legend.innerHTML = `<span class="p"><span class="dot"></span>pilar (ponto de transposição)</span><span class="i"><span class="dot"></span>nota interpolada</span>`;
   resultsMeta.appendChild(legend);
 
-  if(!labels){
-    const metaLine = document.createElement('div');
-    metaLine.className = 'meta';
-    metaLine.innerHTML = `<span class="count">Exibindo <b>${melodies.length}</b> de <b>${totalCount.toLocaleString('pt-BR')}</b> melodia(s) possíveis</span>`;
-    resultsMeta.appendChild(metaLine);
-
-    if(totalCount > melodies.length){
-      const warn = document.createElement('div');
-      warn.className = 'warn';
-      warn.textContent = `O espaço total de combinações (${totalCount.toLocaleString('pt-BR')}) excede o limite de exibição. Reduza o nº de notas interpoladas, use "mesmo padrão" ou escolha uma divisão menor para ver o conjunto completo.`;
-      resultsMeta.appendChild(warn);
-    }
-  }
+  const metaLine = document.createElement('div');
+  metaLine.className = 'meta';
+  metaLine.innerHTML = `<span class="count">Exibindo <b>${melodies.length}</b> de <b>${totalCount.toLocaleString('pt-BR')}</b> melodia(s) possíveis</span>`;
+  resultsMeta.appendChild(metaLine);
 
   resultsDiv.innerHTML = '';
   melodies.forEach((notes, idx)=>{
     const row = document.createElement('div');
     row.className = 'result';
-    const labelHtml = labels ? `<div class="form-label">${labels[idx]}</div>` : '';
     row.innerHTML = `
       <div class="idx">${String(idx+1).padStart(3,'0')}</div>
       <div class="notes">
-        ${labelHtml}
         <div class="note-line">${renderMelody(notes)}</div>
         <div class="intervals">padrão intervalar: ${intervalString(notes)}</div>
         <div class="classif">${classify(notes)}</div>
@@ -720,6 +789,10 @@ function renderResults(melodies, totalCount, labels){
     resultsDiv.appendChild(row);
   });
 }
+
+// Inicializa gerando o primeiro ditado automaticamente
+appModeSel.value = 'dictation';
+genBtn.click();
 </script>
 </body>
 </html>
