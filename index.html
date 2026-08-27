@@ -145,6 +145,60 @@
   button.generate:hover{background:#e0b544;}
   button.generate:disabled{background:#5b5030;color:#8a8574;cursor:not-allowed;}
 
+  /* GLOSSÁRIO DE ESCALAS */
+  details.glossary {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    margin-bottom: 24px;
+    padding: 0;
+  }
+  details.glossary summary {
+    padding: 16px 20px;
+    cursor: pointer;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 700;
+    color: var(--accent-blue);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 13px;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  details.glossary summary::-webkit-details-marker { display: none; }
+  details.glossary summary::after { content: '+'; font-size: 18px; font-weight: 400; color: var(--accent-blue); }
+  details.glossary[open] summary { border-bottom: 1px solid var(--line); color: var(--gold); }
+  details.glossary[open] summary::after { content: '−'; color: var(--gold); }
+  .glossary-content { padding: 20px; }
+  .glossary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
+  .scale-group h4 {
+    color: var(--gold-dim);
+    margin: 0 0 12px 0;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 6px;
+  }
+  .scale-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11.5px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed #2a2822;
+  }
+  .scale-name { color: #c9c6ba; }
+  .scale-degrees { color: var(--gold); font-weight: 600; text-align: right; }
+
+  .playback-controls {
+    background: #12110e;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent-blue);
+    padding: 16px 20px;
+    margin-bottom: 24px;
+  }
   .dictation-control-bar {
     background: #1f1e19;
     border: 1px solid var(--gold-dim);
@@ -156,10 +210,7 @@
     flex-wrap: wrap;
     gap: 12px;
   }
-  .dictation-btns {
-    display: flex;
-    gap: 10px;
-  }
+  .dictation-btns { display: flex; flex-wrap: wrap; gap: 10px; }
   .btn-action {
     background: #000;
     border: 1px solid var(--gold);
@@ -172,30 +223,15 @@
     text-transform: uppercase;
   }
   .btn-action:hover { background: var(--gold); color: #0D0D0D; }
-  .btn-reveal {
-    border-color: var(--accent-blue);
-    color: var(--accent-blue);
-  }
+  .btn-reveal { border-color: var(--accent-blue); color: var(--accent-blue); }
   .btn-reveal:hover { background: var(--accent-blue); color: #fff; }
+  .btn-stop { border-color: var(--danger); color: var(--danger); width: 100%; }
+  .btn-stop:hover { background: var(--danger); color: #fff; }
 
-  .meta{
-    display:flex;
-    justify-content:space-between;
-    align-items:baseline;
-    margin-bottom:14px;
-    flex-wrap:wrap;
-    gap:8px;
-  }
+  .meta{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:14px; flex-wrap:wrap; gap:8px; }
   .meta .count{font-size:13px;color:#8a877c;}
   .meta .count b{color:var(--gold);}
-  .warn{
-    background:#241d13;
-    border-left:3px solid var(--danger);
-    padding:9px 12px;
-    font-size:12px;
-    color:#d9a48f;
-    margin-bottom:14px;
-  }
+  
   .result{
     border:1px solid var(--line);
     border-left:3px solid var(--gold-dim);
@@ -203,71 +239,72 @@
     margin-bottom:10px;
     display:flex;
     justify-content:space-between;
-    align-items:center;
+    align-items:flex-start;
     gap:16px;
   }
-  .result .idx{
-    font-size:11px;
-    color:#665f4e;
-    min-width:32px;
-  }
+  .result .idx{ font-size:11px; color:#665f4e; min-width:32px; }
   .notes{flex:1;min-width:0;}
-  .note-line{
-    font-size:16px;
-    letter-spacing:0.5px;
-    word-break:break-word;
-    transition: filter 0.3s;
+  .note-line{ font-size:16px; letter-spacing:0.5px; word-break:break-word; transition: filter 0.3s; }
+  
+  /* ESTILOS DO QUIZ */
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 12px;
   }
-  .hidden-notes .note-line {
-    filter: blur(6px);
-    user-select: none;
-    color: transparent;
-    background: #222;
+  .quiz-btn {
+    background: #11100e;
+    border: 1px solid #3d3a33;
+    color: #ede8dc;
+    padding: 14px 18px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
   }
-  .hidden-notes .intervals, .hidden-notes .classif {
-    display: none;
+  .quiz-btn:hover {
+    border-color: var(--gold);
+    background: #1f1d19;
   }
+  .quiz-btn.correct {
+    background: #152b1b;
+    border-color: #4CAF50;
+    color: #6ed973;
+    font-weight: bold;
+  }
+  .quiz-btn.wrong {
+    background: #331515;
+    border-color: var(--danger);
+    color: #e37462;
+    animation: shake 0.3s;
+  }
+  @keyframes shake {
+    0%, 100% {transform: translateX(0);}
+    25% {transform: translateX(-5px);}
+    75% {transform: translateX(5px);}
+  }
+  .reveal-content {
+    margin-top: 20px;
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+    animation: fadeIn 0.5s ease-in;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
   .note-line .pillar{color:var(--gold);font-weight:600;}
   .note-line .interp{color:#c9c6ba;}
   .note-line .sep{color:#514c3d;margin:0 3px;}
-  .intervals{
-    font-size:11px;
-    color:#7c7969;
-    margin-top:5px;
-    letter-spacing:0.5px;
-  }
-  .classif{
-    font-size:10.5px;
-    color:var(--gold-dim);
-    margin-top:4px;
-    letter-spacing:0.5px;
-    text-transform:uppercase;
-  }
+  .intervals{ font-size:11px; color:#7c7969; margin-top:5px; letter-spacing:0.5px; }
+  .classif{ font-size:10.5px; color:var(--gold-dim); margin-top:4px; letter-spacing:0.5px; text-transform:uppercase; }
   .play-btn{
-    background:none;
-    border:1px solid var(--gold-dim);
-    color:var(--gold);
-    width:38px;height:38px;
-    flex-shrink:0;
-    cursor:pointer;
-    font-size:14px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    background:none; border:1px solid var(--gold-dim); color:var(--gold); width:38px;height:38px; flex-shrink:0; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center;
   }
   .play-btn:hover{background:var(--gold);color:#0D0D0D;}
-  .empty{
-    text-align:center;
-    color:#5b584a;
-    padding:60px 0;
-    font-size:13px;
-    letter-spacing:1px;
-    text-transform:uppercase;
-    border:1px dashed var(--line);
-  }
-  .legend{
-    display:flex;gap:20px;margin-bottom:18px;font-size:11px;color:#8a877c;flex-wrap:wrap;
-  }
+  .empty{ text-align:center; color:#5b584a; padding:60px 0; font-size:13px; letter-spacing:1px; text-transform:uppercase; border:1px dashed var(--line); }
+  .legend{ display:flex;gap:20px;margin-bottom:18px;font-size:11px;color:#8a877c;flex-wrap:wrap; }
   .legend span.dot{display:inline-block;width:8px;height:8px;margin-right:6px;vertical-align:middle;}
   .legend .p .dot{background:var(--gold);}
   .legend .i .dot{background:#c9c6ba;}
@@ -276,8 +313,8 @@
 <body>
 <div class="wrap">
   <header>
-    <h1>Gerador <span>Slonimsky</span> v3</h1>
-    <div class="subtitle">Edição Completa com Modo de Treino para Ditado Melódico</div>
+    <h1>Gerador <span>Slonimsky</span> v6</h1>
+    <div class="subtitle">Quiz de Percepção & Graus Relativos</div>
   </header>
 
   <div class="panel">
@@ -288,13 +325,13 @@
 
     <div class="grid" style="margin-bottom:16px;">
       <div>
-        <label for="startNote">Nota inicial</label>
+        <label for="startNote">Nota inicial (Centro Tonal "1")</label>
         <select id="startNote"></select>
       </div>
       <div>
         <label for="appMode">Modo de Operação</label>
         <select id="appMode">
-          <option value="dictation">Modo Ditado (Ocultar & Sortear)</option>
+          <option value="dictation">Modo Ditado Interativo (Quiz)</option>
           <option value="explore">Modo Exploração Livre (Listar tudo)</option>
         </select>
       </div>
@@ -373,15 +410,81 @@
     <button class="generate" id="genBtn">Gerar / Sortear Melodias</button>
   </div>
 
+  <!-- GLOSSÁRIO DE ESCALAS -->
+  <details class="glossary">
+    <summary>📚 Glossário de Escalas & Graus Relativos</summary>
+    <div class="glossary-content">
+      <div class="glossary-grid">
+        <div class="scale-group">
+          <h4>Escalas Maiores / Modos Naturais</h4>
+          <div class="scale-item"><span class="scale-name">Jônio (Maior)</span><span class="scale-degrees">1, 2, 3, 4, 5, 6, 7</span></div>
+          <div class="scale-item"><span class="scale-name">Dórico</span><span class="scale-degrees">1, 2, b3, 4, 5, 6, b7</span></div>
+          <div class="scale-item"><span class="scale-name">Frígio</span><span class="scale-degrees">1, b2, b3, 4, 5, b6, b7</span></div>
+          <div class="scale-item"><span class="scale-name">Lídio</span><span class="scale-degrees">1, 2, 3, #4, 5, 6, 7</span></div>
+          <div class="scale-item"><span class="scale-name">Mixolídio</span><span class="scale-degrees">1, 2, 3, 4, 5, 6, b7</span></div>
+          <div class="scale-item"><span class="scale-name">Eólio (Menor Natural)</span><span class="scale-degrees">1, 2, b3, 4, 5, b6, b7</span></div>
+          <div class="scale-item"><span class="scale-name">Lócrio</span><span class="scale-degrees">1, b2, b3, 4, b5, b6, b7</span></div>
+        </div>
+        <div class="scale-group">
+          <h4>Famílias Menores (Alteradas)</h4>
+          <div class="scale-item"><span class="scale-name">Menor Harmônica</span><span class="scale-degrees">1, 2, b3, 4, 5, b6, 7</span></div>
+          <div class="scale-item"><span class="scale-name">Frígio Maior</span><span class="scale-degrees">1, b2, 3, 4, 5, b6, b7</span></div>
+          <div class="scale-item"><span class="scale-name">Menor Melódica</span><span class="scale-degrees">1, 2, b3, 4, 5, 6, 7</span></div>
+          <div class="scale-item"><span class="scale-name">Lídio b7 (Dominante)</span><span class="scale-degrees">1, 2, 3, #4, 5, 6, b7</span></div>
+          <div class="scale-item"><span class="scale-name">Alterada (Super Lócria)</span><span class="scale-degrees">1, b2, #2, 3, b5, #5, b7</span></div>
+        </div>
+        <div class="scale-group">
+          <h4>Pentatônicas & Blues</h4>
+          <div class="scale-item"><span class="scale-name">Pentatônica Maior</span><span class="scale-degrees">1, 2, 3, 5, 6</span></div>
+          <div class="scale-item"><span class="scale-name">Pentatônica Menor</span><span class="scale-degrees">1, b3, 4, 5, b7</span></div>
+          <div class="scale-item"><span class="scale-name">Escala Blues</span><span class="scale-degrees">1, b3, 4, #4, 5, b7</span></div>
+        </div>
+        <div class="scale-group">
+          <h4>Escalas Simétricas</h4>
+          <div class="scale-item"><span class="scale-name">Tons Inteiros (Hexatônica)</span><span class="scale-degrees">1, 2, 3, #4, #5, b7</span></div>
+          <div class="scale-item"><span class="scale-name">Diminuta (Tom-Semitom)</span><span class="scale-degrees">1, 2, b3, 4, b5, b6, 6, 7</span></div>
+          <div class="scale-item"><span class="scale-name">Dom. Dim (Semitom-Tom)</span><span class="scale-degrees">1, b2, #2, 3, #4, 5, 6, b7</span></div>
+          <div class="scale-item"><span class="scale-name">Aumentada (Tom-Sem-Sem)</span><span class="scale-degrees">1, #2, 3, 5, b6, 7</span></div>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <!-- BARRA DE CONTROLE DE ÁUDIO & METRÔNOMO -->
+  <div class="playback-controls">
+    <div class="grid">
+      <div>
+        <label for="bpm">Andamento (BPM)</label>
+        <input type="number" id="bpm" value="70" min="30" max="240">
+      </div>
+      <div>
+        <label>Ecossistema de Áudio</label>
+        <div class="toggle-row">
+          <input type="checkbox" id="useMetronome" checked>
+          <span>Metrônomo (C/ Count-in)</span>
+        </div>
+        <div class="toggle-row">
+          <input type="checkbox" id="useLoop">
+          <span>Loop Contínuo (Apreciação)</span>
+        </div>
+      </div>
+      <div>
+        <label>Controle Final</label>
+        <button class="btn-action btn-stop" id="stopBtn">⏹ Parar Áudio</button>
+      </div>
+    </div>
+  </div>
+
   <!-- BARRA DE CONTROLE DO DITADO -->
   <div class="dictation-control-bar" id="dictationBar" style="display:none;">
     <div>
-      <strong style="color:var(--gold); font-size: 13px;">TREINO DE DITADO MELÓDICO</strong>
-      <div style="font-size:11px; color:#a09d90; margin-top:2px;">Ouça o áudio, transcreva no papel e revele quando quiser conferir.</div>
+      <strong style="color:var(--gold); font-size: 13px;">TESTE SUA PERCEPÇÃO</strong>
+      <div style="font-size:11px; color:#a09d90; margin-top:2px;">Selecione abaixo a sequência de graus que corresponde ao áudio tocado.</div>
     </div>
     <div class="dictation-btns">
-      <button class="btn-action" id="replayBtn">🔊 Ouvir Novamente</button>
-      <button class="btn-action btn-reveal" id="revealBtn">👁️ Revelar Resposta</button>
+      <button class="btn-action" id="playRootBtn">🎵 Tocar Tônica (Âncora)</button>
+      <button class="btn-action" id="replayBtn">🔊 Ouvir Ditado</button>
+      <button class="btn-action btn-reveal" id="revealBtn">👁️ Revelar / Pular</button>
     </div>
   </div>
 
@@ -391,6 +494,7 @@
 
 <script>
 const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const DEGREES = ['1', 'b2', '2', 'b3', '3', '4', '#4', '5', 'b6', '6', 'b7', '7'];
 const CAP = 300; 
 
 const startSel = document.getElementById('startNote');
@@ -413,6 +517,8 @@ const appModeSel = document.getElementById('appMode');
 const dictationBar = document.getElementById('dictationBar');
 const replayBtn = document.getElementById('replayBtn');
 const revealBtn = document.getElementById('revealBtn');
+const playRootBtn = document.getElementById('playRootBtn');
+const stopBtn = document.getElementById('stopBtn');
 
 const patternInput = document.getElementById('patternInput');
 const transposeStepInput = document.getElementById('transposeStep');
@@ -427,6 +533,99 @@ const transformRow = document.getElementById('transformRow');
 let currentMode = 'pattern';
 let activeDictationNotes = null;
 
+// ÁUDIO E SINTETIZADOR
+let audioCtx = null;
+let activeAudioNodes = [];
+let loopTimeout = null;
+
+function stopAudio() {
+  if(loopTimeout) clearTimeout(loopTimeout);
+  activeAudioNodes.forEach(node => {
+    try { node.stop(); node.disconnect(); } catch(e){}
+  });
+  activeAudioNodes = [];
+}
+
+stopBtn.addEventListener('click', stopAudio);
+
+function playTone(freq, time, duration, type='triangle', vol=0.25) {
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  
+  gain.gain.setValueAtTime(0.0001, time);
+  gain.gain.exponentialRampToValueAtTime(vol, time + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
+  
+  osc.connect(gain).connect(audioCtx.destination);
+  osc.start(time);
+  osc.stop(time + duration + 0.05);
+  activeAudioNodes.push(osc);
+}
+
+function playRootAnchor() {
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+  stopAudio();
+  
+  const startOffset = parseInt(startSel.value);
+  const midi = 60 + startOffset;
+  const freqRoot = 440 * Math.pow(2, (midi-69)/12);
+  const freqFifth = 440 * Math.pow(2, (midi+7-69)/12);
+  
+  const now = audioCtx.currentTime;
+  playTone(freqRoot, now, 2.5, 'sine', 0.4);
+  playTone(freqFifth, now, 2.5, 'sine', 0.2);
+}
+
+playRootBtn.addEventListener('click', playRootAnchor);
+
+function playMelody(notes){
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+  
+  stopAudio();
+  
+  const bpm = parseInt(document.getElementById('bpm').value) || 70;
+  const useMetronome = document.getElementById('useMetronome').checked;
+  const useLoop = document.getElementById('useLoop').checked;
+  
+  const beatDur = 60 / bpm;
+  const noteDur = beatDur / 2;
+  
+  let t = audioCtx.currentTime + 0.1;
+
+  if (useMetronome) {
+    for(let i=0; i<4; i++) {
+      const metFreq = (i === 0) ? 880 : 440;
+      playTone(metFreq, t + (i * beatDur), 0.1, 'square', 0.15);
+    }
+    t += 4 * beatDur;
+  }
+
+  notes.forEach((n, idx)=>{
+    const midi = 60 + n.offset;
+    const freq = 440 * Math.pow(2, (midi-69)/12);
+    playTone(freq, t, noteDur * 0.9, 'triangle', 0.25);
+    
+    if (useMetronome && idx % 2 === 0) {
+      const beatIdx = (idx / 2) % 4;
+      const metFreq = (beatIdx === 0) ? 880 : 440;
+      playTone(metFreq, t, 0.05, 'square', 0.08);
+    }
+    t += noteDur;
+  });
+
+  if (useLoop) {
+    const totalDuration = t - audioCtx.currentTime;
+    loopTimeout = setTimeout(() => {
+      playMelody(notes);
+    }, (totalDuration + (beatDur * 4)) * 1000);
+  }
+}
+
+// LOGICA SLONIMSKY
 function setMode(mode){
   currentMode = mode;
   modeBtnPattern.classList.toggle('active', mode==='pattern');
@@ -588,12 +787,28 @@ function cartesianProduct(arrays, cap){
   return results.slice(0, cap);
 }
 
-function noteName(offset){
-  return NOTE_NAMES[((offset % 12) + 12) % 12];
+function renderMelodyText(notes, tonicOffset){
+  return notes.map(n => {
+    const diff = n.offset - tonicOffset;
+    const interval = ((diff % 12) + 12) % 12;
+    let text = DEGREES[interval];
+    const octaves = Math.floor(diff / 12);
+    if (octaves > 0) text += "'".repeat(octaves);
+    if (octaves < 0) text += ",".repeat(Math.abs(octaves));
+    return text;
+  }).join(' – ');
 }
 
-function renderMelody(notes){
-  return notes.map(n => `<span class="${n.pillar?'pillar':'interp'}">${noteName(n.offset)}</span>`).join('<span class="sep">–</span>');
+function renderMelodyHTML(notes, tonicOffset){
+  return notes.map(n => {
+    const diff = n.offset - tonicOffset;
+    const interval = ((diff % 12) + 12) % 12;
+    let text = DEGREES[interval];
+    const octaves = Math.floor(diff / 12);
+    if (octaves > 0) text += "'".repeat(octaves);
+    if (octaves < 0) text += ",".repeat(Math.abs(octaves));
+    return `<span class="${n.pillar?'pillar':'interp'}">${text}</span>`;
+  }).join('<span class="sep">–</span>');
 }
 
 function intervalString(notes){
@@ -630,34 +845,12 @@ const SYMMETRIC_SETS = [
 function classify(notes){
   const pcSet = [...new Set(notes.map(n => ((n.offset%12)+12)%12))];
   const matches = SYMMETRIC_SETS.filter(s => pcSet.every(pc => s.pcs.includes(pc)));
-  if(matches.length === 0) return 'sem coleção simétrica específica';
-  return 'subconjunto de: ' + [...new Set(matches.map(m=>m.name))].join(', ');
-}
-
-let audioCtx = null;
-function playMelody(notes){
-  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  if(audioCtx.state === 'suspended') audioCtx.resume();
-  let t = audioCtx.currentTime + 0.05;
-  const noteDur = 0.75; 
-  notes.forEach((n)=>{
-    const midi = 60 + n.offset;
-    const freq = 440 * Math.pow(2, (midi-69)/12);
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = 'triangle';
-    osc.frequency.value = freq;
-    gain.gain.setValueAtTime(0.0001, t);
-    gain.gain.exponentialRampToValueAtTime(0.25, t+0.04);
-    gain.gain.exponentialRampToValueAtTime(0.0001, t+noteDur);
-    osc.connect(gain).connect(audioCtx.destination);
-    osc.start(t);
-    osc.stop(t+noteDur+0.05);
-    t += noteDur * 0.95;
-  });
+  if(matches.length === 0) return 'Sem coleção simétrica específica';
+  return 'Subconjunto de: ' + [...new Set(matches.map(m=>m.name))].join(', ');
 }
 
 genBtn.addEventListener('click', ()=>{
+  stopAudio();
   const isDictation = appModeSel.value === 'dictation';
   dictationBar.style.display = isDictation ? 'flex' : 'none';
 
@@ -675,16 +868,14 @@ genBtn.addEventListener('click', ()=>{
     const base = buildFromPattern(start, pattern, step, reps);
 
     if(isDictation){
-      activeDictationNotes = base;
-      renderDictationResults(base);
-      playMelody(base);
+      activeDictationNotes = applyTransform(base, transformSel.value);
+      renderDictationQuiz(activeDictationNotes);
     } else {
       const transformMode = transformSel.value;
       const notes = applyTransform(base, transformMode);
       renderExploreResults([notes], 1);
     }
   } else {
-    // Modo Pilares Completo
     const start = parseInt(startSel.value);
     const n = parseInt(divisionSel.value);
     const gap = gapSize();
@@ -715,8 +906,7 @@ genBtn.addEventListener('click', ()=>{
 
     if(isDictation && melodies.length > 0){
       activeDictationNotes = melodies[0];
-      renderDictationResults(melodies[0]);
-      playMelody(melodies[0]);
+      renderDictationQuiz(melodies[0]);
     } else {
       renderExploreResults(melodies, totalCount);
     }
@@ -727,32 +917,114 @@ replayBtn.addEventListener('click', ()=>{
   if(activeDictationNotes) playMelody(activeDictationNotes);
 });
 
-revealBtn.addEventListener('click', ()=>{
-  const resultBox = document.querySelector('.result');
-  if(resultBox) {
-    resultBox.classList.remove('hidden-notes');
-    revealBtn.textContent = '✔️ Resposta Revelada';
-    revealBtn.disabled = true;
+// FUNÇÃO DO QUIZ DE DITADO
+function renderDictationQuiz(notes){
+  const tonic = notes[0].offset;
+  const correctStr = renderMelodyText(notes, tonic);
+  
+  // Gerar distratores
+  const options = [correctStr];
+  let attempts = 0;
+  
+  while(options.length < 4 && attempts < 100) {
+    attempts++;
+    let fake = [];
+    const type = Math.random();
+    
+    if(type < 0.5) {
+      // Mutação 1: Mesmos intervalos, mas começando em grau diferente (Deslocamento Diatônico/Cromático)
+      const shift = Math.floor(Math.random() * 11) + 1;
+      fake = notes.map(n => ({offset: n.offset + shift, pillar: n.pillar}));
+    } else {
+      // Mutação 2: Mesmo grau inicial, alterando saltos internos
+      let cursor = tonic;
+      fake.push({offset: cursor, pillar: true});
+      for(let i=1; i<notes.length; i++) {
+          const diff = notes[i].offset - notes[i-1].offset;
+          // Altera o intervalo em +1 ou -1 semitom
+          const mut = diff + (Math.random() < 0.5 ? 1 : -1);
+          cursor += mut;
+          fake.push({offset: cursor, pillar: notes[i].pillar});
+      }
+    }
+    
+    const fakeStr = renderMelodyText(fake, tonic);
+    if(!options.includes(fakeStr)) {
+      options.push(fakeStr);
+    }
   }
-});
 
-function renderDictationResults(notes){
+  // Embaralhar as opções
+  options.sort(() => Math.random() - 0.5);
+
+  let optionsHtml = '<div class="quiz-options" id="quizOptionsContainer">';
+  options.forEach((opt, idx) => {
+    const isCorrect = opt === correctStr;
+    optionsHtml += `<button class="quiz-btn" data-correct="${isCorrect}">${opt}</button>`;
+  });
+  optionsHtml += '</div>';
+
   resultsMeta.innerHTML = `<div class="legend"><span class="p"><span class="dot"></span>Nota de referência/pilar</span></div>`;
+  
   resultsDiv.innerHTML = `
-    <div class="result hidden-notes">
+    <div class="result" id="dictationResultBox">
       <div class="idx">#1</div>
-      <div class="notes">
-        <div class="form-label">Transcrição Oculta (Modo Ditado)</div>
-        <div class="note-line">${renderMelody(notes)}</div>
-        <div class="intervals">padrão intervalar: ${intervalString(notes)}</div>
-        <div class="classif">${classify(notes)}</div>
+      <div class="notes" style="width:100%">
+        <div class="form-label" id="quizLabel">O que você ouviu? (Selecione a sequência correta)</div>
+        
+        ${optionsHtml}
+        
+        <div class="reveal-content" style="display:none;" id="revealContent">
+          <div class="form-label" style="color: #4CAF50; margin-bottom: 12px;">✓ Resposta Correta e Análise</div>
+          <div class="note-line">${renderMelodyHTML(notes, tonic)}</div>
+          <div class="intervals">Padrão intervalar original: ${intervalString(notes)}</div>
+          <div class="classif">${classify(notes)}</div>
+        </div>
       </div>
       <button class="play-btn" title="Tocar" id="inlinePlay">▶</button>
     </div>
   `;
+
   document.getElementById('inlinePlay').addEventListener('click', ()=>playMelody(notes));
-  revealBtn.textContent = '👁️ Revelar Resposta';
+  revealBtn.textContent = '👁️ Revelar / Pular';
   revealBtn.disabled = false;
+
+  // Lógica de clique nos botões do quiz
+  document.querySelectorAll('.quiz-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+       if (e.target.dataset.correct === "true") {
+          e.target.classList.add('correct');
+          document.getElementById('quizLabel').innerHTML = '<span style="color:#4CAF50">✓ Brilhante! Você acertou.</span>';
+          showRevealContent();
+       } else {
+          e.target.classList.add('wrong');
+          // Remove a classe após a animação para permitir clicar de novo se quiser
+          setTimeout(() => e.target.classList.remove('wrong'), 400);
+       }
+    });
+  });
+
+  // Sobrescrevendo o evento do botão global Revelar
+  revealBtn.onclick = () => {
+     document.getElementById('quizLabel').innerHTML = '<span style="color:#e37462">👁️ Resposta Revelada Manualmente</span>';
+     // Marca a opção correta visualmente antes de revelar o painel
+     document.querySelectorAll('.quiz-btn').forEach(b => {
+       if(b.dataset.correct === "true") b.classList.add('correct');
+     });
+     showRevealContent();
+  };
+}
+
+function showRevealContent() {
+   const content = document.getElementById('revealContent');
+   const optionsContainer = document.getElementById('quizOptionsContainer');
+   if(content) {
+     content.style.display = 'block';
+     optionsContainer.style.opacity = '0.6';
+     optionsContainer.style.pointerEvents = 'none'; // Desabilita novos cliques no quiz
+     revealBtn.textContent = '✔️ Resposta Verificada';
+     revealBtn.disabled = true;
+   }
 }
 
 function renderExploreResults(melodies, totalCount){
@@ -764,7 +1036,7 @@ function renderExploreResults(melodies, totalCount){
 
   const legend = document.createElement('div');
   legend.className = 'legend';
-  legend.innerHTML = `<span class="p"><span class="dot"></span>pilar (ponto de transposição)</span><span class="i"><span class="dot"></span>nota interpolada</span>`;
+  legend.innerHTML = `<span class="p"><span class="dot"></span>pilar (ponto de transposição)</span><span class="i"><span class="dot"></span>nota interpolada</span><br><span style="margin-top:5px;display:inline-block">Graus com (') = oitava acima / Graus com (,) = oitava abaixo</span>`;
   resultsMeta.appendChild(legend);
 
   const metaLine = document.createElement('div');
@@ -776,10 +1048,11 @@ function renderExploreResults(melodies, totalCount){
   melodies.forEach((notes, idx)=>{
     const row = document.createElement('div');
     row.className = 'result';
+    const tonic = notes[0].offset;
     row.innerHTML = `
       <div class="idx">${String(idx+1).padStart(3,'0')}</div>
       <div class="notes">
-        <div class="note-line">${renderMelody(notes)}</div>
+        <div class="note-line">${renderMelodyHTML(notes, tonic)}</div>
         <div class="intervals">padrão intervalar: ${intervalString(notes)}</div>
         <div class="classif">${classify(notes)}</div>
       </div>
@@ -790,7 +1063,7 @@ function renderExploreResults(melodies, totalCount){
   });
 }
 
-// Inicializa gerando o primeiro ditado automaticamente
+// Inicia no modo Ditado automaticamente
 appModeSel.value = 'dictation';
 genBtn.click();
 </script>
