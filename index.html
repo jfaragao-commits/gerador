@@ -2,1070 +2,270 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Gerador Slonimsky — Completo + Modo Ditado Melódico</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>B.E.M. — Gerador de Ditado Melódico V7</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@500;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#0D0D0D;
-    --gold:#C8A030;
-    --gold-dim:#8a6f24;
-    --paper:#EDE8DC;
-    --line:#33312c;
-    --panel:#161613;
-    --danger:#b5533f;
-    --accent-blue:#3f88b5;
-  }
-  *{box-sizing:border-box;}
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--paper);
-    font-family:'IBM Plex Mono',monospace;
-    padding:32px 24px 80px;
-  }
-  .wrap{max-width:920px;margin:0 auto;}
-  header{
-    border-bottom:3px solid var(--gold);
-    padding-bottom:18px;
-    margin-bottom:28px;
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-end;
-    gap:16px;
-    flex-wrap:wrap;
-  }
-  h1{
-    font-family:'IBM Plex Sans',sans-serif;
-    font-weight:700;
-    font-size:26px;
-    letter-spacing:0.5px;
-    margin:0;
-    text-transform:uppercase;
-  }
-  h1 span{color:var(--gold);}
-  .subtitle{
-    font-size:12px;
-    color:#8a877c;
-    letter-spacing:1px;
-    text-transform:uppercase;
-    max-width:300px;
-    text-align:right;
-    line-height:1.5;
-  }
-  .panel{
-    background:var(--panel);
-    border:1px solid var(--line);
-    padding:20px;
-    margin-bottom:24px;
-  }
-  .grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-    gap:18px;
-  }
-  label{
-    display:block;
-    font-size:11px;
-    text-transform:uppercase;
-    letter-spacing:1px;
-    color:var(--gold);
-    margin-bottom:6px;
-  }
-  select,input[type=number],input[type=text]{
-    width:100%;
-    background:#000;
-    color:var(--paper);
-    border:1px solid var(--line);
-    padding:9px 10px;
-    font-family:'IBM Plex Mono',monospace;
-    font-size:14px;
-  }
-  select:focus,input:focus{outline:2px solid var(--gold);outline-offset:1px;}
-  .toggle-row{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-top:6px;
-  }
-  .toggle-row input{width:auto;accent-color:var(--gold);}
-  .toggle-row span{font-size:12.5px;color:#c9c6ba;}
-  .hint{font-size:11.5px;color:#7c7969;margin-top:8px;line-height:1.5;}
-  .mode-switch{
-    display:flex;gap:0;margin-bottom:20px;border:1px solid var(--line);
-  }
-  .mode-btn{
-    flex:1;
-    background:#000;
-    color:#8a877c;
-    border:none;
-    font-family:'IBM Plex Sans',sans-serif;
-    font-weight:700;
-    font-size:12px;
-    letter-spacing:1px;
-    text-transform:uppercase;
-    padding:12px 10px;
-    cursor:pointer;
-    border-right:1px solid var(--line);
-  }
-  .mode-btn:last-child{border-right:none;}
-  .mode-btn.active{background:var(--gold);color:#0D0D0D;}
-  .preset-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
-  .preset-btn{
-    background:#000;
-    border:1px solid var(--line);
-    color:#c9c6ba;
-    font-family:'IBM Plex Mono',monospace;
-    font-size:11px;
-    padding:6px 10px;
-    cursor:pointer;
-  }
-  .preset-btn:hover{border-color:var(--gold);color:var(--gold);}
-  .form-label{
-    font-size:10px;
-    color:var(--gold-dim);
-    text-transform:uppercase;
-    letter-spacing:1px;
-    margin-bottom:6px;
-  }
-  button.generate{
-    margin-top:20px;
-    background:var(--gold);
-    color:#0D0D0D;
-    border:none;
-    font-family:'IBM Plex Sans',sans-serif;
-    font-weight:700;
-    font-size:13px;
-    letter-spacing:1.5px;
-    text-transform:uppercase;
-    padding:13px 26px;
-    cursor:pointer;
-    width: 100%;
-  }
-  button.generate:hover{background:#e0b544;}
-  button.generate:disabled{background:#5b5030;color:#8a8574;cursor:not-allowed;}
-
-  /* GLOSSÁRIO DE ESCALAS */
-  details.glossary {
-    background: var(--panel);
-    border: 1px solid var(--line);
-    margin-bottom: 24px;
-    padding: 0;
-  }
-  details.glossary summary {
-    padding: 16px 20px;
-    cursor: pointer;
-    font-family: 'IBM Plex Sans', sans-serif;
-    font-weight: 700;
-    color: var(--accent-blue);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-size: 13px;
-    list-style: none;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  details.glossary summary::-webkit-details-marker { display: none; }
-  details.glossary summary::after { content: '+'; font-size: 18px; font-weight: 400; color: var(--accent-blue); }
-  details.glossary[open] summary { border-bottom: 1px solid var(--line); color: var(--gold); }
-  details.glossary[open] summary::after { content: '−'; color: var(--gold); }
-  .glossary-content { padding: 20px; }
-  .glossary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
-  .scale-group h4 {
-    color: var(--gold-dim);
-    margin: 0 0 12px 0;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border-bottom: 1px solid var(--line);
-    padding-bottom: 6px;
-  }
-  .scale-item {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11.5px;
-    margin-bottom: 8px;
-    padding-bottom: 6px;
-    border-bottom: 1px dashed #2a2822;
-  }
-  .scale-name { color: #c9c6ba; }
-  .scale-degrees { color: var(--gold); font-weight: 600; text-align: right; }
-
-  .playback-controls {
-    background: #12110e;
-    border: 1px solid var(--line);
-    border-left: 3px solid var(--accent-blue);
-    padding: 16px 20px;
-    margin-bottom: 24px;
-  }
-  .dictation-control-bar {
-    background: #1f1e19;
-    border: 1px solid var(--gold-dim);
-    padding: 16px;
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  .dictation-btns { display: flex; flex-wrap: wrap; gap: 10px; }
-  .btn-action {
-    background: #000;
-    border: 1px solid var(--gold);
-    color: var(--gold);
-    padding: 10px 16px;
-    font-family: 'IBM Plex Mono',monospace;
-    font-size: 12px;
-    cursor: pointer;
-    font-weight: 600;
-    text-transform: uppercase;
-  }
-  .btn-action:hover { background: var(--gold); color: #0D0D0D; }
-  .btn-reveal { border-color: var(--accent-blue); color: var(--accent-blue); }
-  .btn-reveal:hover { background: var(--accent-blue); color: #fff; }
-  .btn-stop { border-color: var(--danger); color: var(--danger); width: 100%; }
-  .btn-stop:hover { background: var(--danger); color: #fff; }
-
-  .meta{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:14px; flex-wrap:wrap; gap:8px; }
-  .meta .count{font-size:13px;color:#8a877c;}
-  .meta .count b{color:var(--gold);}
-  
-  .result{
-    border:1px solid var(--line);
-    border-left:3px solid var(--gold-dim);
-    padding:14px 16px;
-    margin-bottom:10px;
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    gap:16px;
-  }
-  .result .idx{ font-size:11px; color:#665f4e; min-width:32px; }
-  .notes{flex:1;min-width:0;}
-  .note-line{ font-size:16px; letter-spacing:0.5px; word-break:break-word; transition: filter 0.3s; }
-  
-  /* ESTILOS DO QUIZ */
-  .quiz-options {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 12px;
-  }
-  .quiz-btn {
-    background: #11100e;
-    border: 1px solid #3d3a33;
-    color: #ede8dc;
-    padding: 14px 18px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 14px;
-    text-align: left;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: all 0.2s;
-  }
-  .quiz-btn:hover {
-    border-color: var(--gold);
-    background: #1f1d19;
-  }
-  .quiz-btn.correct {
-    background: #152b1b;
-    border-color: #4CAF50;
-    color: #6ed973;
-    font-weight: bold;
-  }
-  .quiz-btn.wrong {
-    background: #331515;
-    border-color: var(--danger);
-    color: #e37462;
-    animation: shake 0.3s;
-  }
-  @keyframes shake {
-    0%, 100% {transform: translateX(0);}
-    25% {transform: translateX(-5px);}
-    75% {transform: translateX(5px);}
-  }
-  .reveal-content {
-    margin-top: 20px;
-    border-top: 1px solid var(--line);
-    padding-top: 16px;
-    animation: fadeIn 0.5s ease-in;
-  }
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-  .note-line .pillar{color:var(--gold);font-weight:600;}
-  .note-line .interp{color:#c9c6ba;}
-  .note-line .sep{color:#514c3d;margin:0 3px;}
-  .intervals{ font-size:11px; color:#7c7969; margin-top:5px; letter-spacing:0.5px; }
-  .classif{ font-size:10.5px; color:var(--gold-dim); margin-top:4px; letter-spacing:0.5px; text-transform:uppercase; }
-  .play-btn{
-    background:none; border:1px solid var(--gold-dim); color:var(--gold); width:38px;height:38px; flex-shrink:0; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center;
-  }
-  .play-btn:hover{background:var(--gold);color:#0D0D0D;}
-  .empty{ text-align:center; color:#5b584a; padding:60px 0; font-size:13px; letter-spacing:1px; text-transform:uppercase; border:1px dashed var(--line); }
-  .legend{ display:flex;gap:20px;margin-bottom:18px;font-size:11px;color:#8a877c;flex-wrap:wrap; }
-  .legend span.dot{display:inline-block;width:8px;height:8px;margin-right:6px;vertical-align:middle;}
-  .legend .p .dot{background:var(--gold);}
-  .legend .i .dot{background:#c9c6ba;}
+:root{--bg:#0D0D0D;--gold:#C8A030;--gold2:#e0b544;--gold-dim:#8a6f24;--paper:#EDE8DC;--muted:#8a877c;--line:#33312c;--panel:#161613;--blue:#3f88b5;--danger:#b5533f;--ok:#4caf50}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--paper);font-family:'IBM Plex Mono',monospace;padding:28px 20px 80px}.wrap{max-width:980px;margin:auto}
+header{border-bottom:3px solid var(--gold);padding-bottom:18px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:end;gap:18px;flex-wrap:wrap}
+h1{font:700 26px 'IBM Plex Sans';margin:0;text-transform:uppercase}h1 span{color:var(--gold)}.subtitle{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;line-height:1.5;text-align:right}
+.panel{background:var(--panel);border:1px solid var(--line);padding:20px;margin-bottom:20px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
+label,.form-label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--gold);margin-bottom:6px}
+select,input{width:100%;background:#000;color:var(--paper);border:1px solid var(--line);padding:9px 10px;font:14px 'IBM Plex Mono'}select:focus,input:focus{outline:2px solid var(--gold);outline-offset:1px}
+.mode-switch{display:flex;border:1px solid var(--line);margin-bottom:18px}.mode-btn{flex:1;background:#000;color:var(--muted);border:0;border-right:1px solid var(--line);padding:12px;font:700 11px 'IBM Plex Sans';text-transform:uppercase;letter-spacing:1px;cursor:pointer}.mode-btn:last-child{border:0}.mode-btn.active{background:var(--gold);color:#0d0d0d}
+.section-title{font:700 13px 'IBM Plex Sans';text-transform:uppercase;letter-spacing:1px;margin:2px 0 14px;color:var(--paper)}.hint{font-size:11px;color:#7c7969;line-height:1.5;margin-top:8px}
+.preset-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.preset-btn{background:#000;border:1px solid var(--line);color:#c9c6ba;padding:6px 9px;font:11px 'IBM Plex Mono';cursor:pointer}.preset-btn:hover{border-color:var(--gold);color:var(--gold)}
+button.generate{margin-top:18px;width:100%;background:var(--gold);color:#0d0d0d;border:0;padding:14px;font:700 13px 'IBM Plex Sans';letter-spacing:1.5px;text-transform:uppercase;cursor:pointer}button.generate:hover{background:var(--gold2)}
+.toggle{display:flex;gap:8px;align-items:center;margin-top:8px;font-size:11px;color:#c9c6ba}.toggle input{width:auto;accent-color:var(--gold)}
+.controls{display:flex;gap:8px;flex-wrap:wrap}.btn{background:#000;border:1px solid var(--gold);color:var(--gold);padding:10px 13px;font:600 11px 'IBM Plex Mono';cursor:pointer;text-transform:uppercase}.btn:hover{background:var(--gold);color:#0d0d0d}.btn.blue{border-color:var(--blue);color:var(--blue)}.btn.blue:hover{background:var(--blue);color:#fff}.btn.red{border-color:var(--danger);color:var(--danger)}.btn:disabled{opacity:.4;cursor:not-allowed}
+.result{border:1px solid var(--line);border-left:3px solid var(--gold-dim);padding:16px;margin-bottom:12px}.result-head{display:flex;justify-content:space-between;gap:12px;align-items:center}.idx{font-size:10px;color:#665f4e}.note-line{font-size:17px;letter-spacing:.5px;line-height:1.8}.pillar{color:var(--gold);font-weight:600}.interp{color:#c9c6ba}.sep{color:#514c3d;margin:0 3px}.meta{font-size:11px;color:var(--muted);margin-bottom:12px}.empty{text-align:center;color:#5b584a;padding:55px 10px;border:1px dashed var(--line);font-size:12px;text-transform:uppercase}
+.quiz-option{display:block;width:100%;background:#11100e;border:1px solid #3d3a33;color:var(--paper);padding:13px 15px;margin:8px 0;text-align:left;font:13px 'IBM Plex Mono';cursor:pointer}.quiz-option:hover{border-color:var(--gold)}.quiz-option.correct{border-color:var(--ok);background:#152b1b;color:#6ed973}.quiz-option.wrong{border-color:var(--danger);background:#331515;color:#e37462}
+.answer-box{border-top:1px solid var(--line);margin-top:16px;padding-top:14px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.stat{border:1px solid var(--line);padding:12px;background:#11100e}.stat b{display:block;color:var(--gold);font-size:20px;margin-top:4px}
+.rhythm-box{font-size:18px;letter-spacing:3px;margin-top:6px;color:#c9c6ba}.badge{display:inline-block;border:1px solid var(--gold-dim);color:var(--gold);padding:4px 7px;font-size:9px;text-transform:uppercase;letter-spacing:1px;margin-right:5px}
+footer{color:#5b584a;font-size:10px;text-align:center;margin-top:28px}
+@media(max-width:600px){body{padding:20px 12px}.stats{grid-template-columns:1fr}.subtitle{text-align:left}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <h1>Gerador <span>Slonimsky</span> v6</h1>
-    <div class="subtitle">Quiz de Percepção & Graus Relativos</div>
-  </header>
+<header><h1>B.E.M. <span>Ditado Melódico</span> V7</h1><div class="subtitle">Gerador pedagógico de melodias<br>por restrições auditivas</div></header>
 
-  <div class="panel">
-    <div class="mode-switch">
-      <button class="mode-btn active" id="modeBtnPattern" data-mode="pattern">Padrão intervalar</button>
-      <button class="mode-btn" id="modeBtnPillars" data-mode="pillars">Pilares — explorar tudo</button>
-    </div>
-
-    <div class="grid" style="margin-bottom:16px;">
-      <div>
-        <label for="startNote">Nota inicial (Centro Tonal "1")</label>
-        <select id="startNote"></select>
-      </div>
-      <div>
-        <label for="appMode">Modo de Operação</label>
-        <select id="appMode">
-          <option value="dictation">Modo Ditado Interativo (Quiz)</option>
-          <option value="explore">Modo Exploração Livre (Listar tudo)</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- MODO: PADRÃO INTERVALAR -->
-    <div id="patternPanel">
-      <label for="patternInput">Padrão intervalar (semitons, separados por espaço — use sinal para descer)</label>
-      <input type="text" id="patternInput" value="+1 +3" placeholder="ex: +1 +3  ou  +4 -1 +4 -1">
-      <div class="preset-row">
-        <button class="preset-btn" data-preset="+6">Trítono +6</button>
-        <button class="preset-btn" data-preset="+3">Diminuta +3</button>
-        <button class="preset-btn" data-preset="+1 +3">Diminuta c/ vizinha</button>
-        <button class="preset-btn" data-preset="+4">Aumentada +4</button>
-        <button class="preset-btn" data-preset="+4 -1 +4 -1">Aumentada zig-zag</button>
-        <button class="preset-btn" data-preset="+2">Tons inteiros +2</button>
-        <button class="preset-btn" data-preset="+1">Cromática +1</button>
-      </div>
-      <div class="grid" style="margin-top:16px;">
-        <div>
-          <label for="transposeStep">Transposição a cada repetição (semitons)</label>
-          <input type="number" id="transposeStep" placeholder="automático">
-        </div>
-        <div>
-          <label for="repeatCount">Número de repetições</label>
-          <input type="number" id="repeatCount" value="3" min="1" max="24">
-        </div>
-      </div>
-      <div class="hint" id="patternHint"></div>
-    </div>
-
-    <!-- MODO: PILARES -->
-    <div id="pillarsPanel" style="display:none;">
-      <div class="grid">
-        <div>
-          <label for="division">Divisão simétrica</label>
-          <select id="division">
-            <option value="2">2 partes — trítono (6+6)</option>
-            <option value="3" selected>3 partes — diminuta (4+4+4)</option>
-            <option value="4">4 partes — aumentada (3+3+3+3)</option>
-            <option value="6">6 partes — tons inteiros (2×6)</option>
-            <option value="12">12 partes — cromática (1×12)</option>
-          </select>
-        </div>
-        <div>
-          <label for="kcount">Notas interpoladas por intervalo</label>
-          <select id="kcount"></select>
-        </div>
-        <div>
-          <label for="orderMode">Ordem das interpoladas</label>
-          <select id="orderMode">
-            <option value="asc">Crescente (clássico)</option>
-            <option value="zigzag">Todas as ordens (zig-zag)</option>
-          </select>
-        </div>
-      </div>
-      <div class="toggle-row">
-        <input type="checkbox" id="samePattern" checked>
-        <span>Mesmo padrão de interpolação em todos os intervalos</span>
-      </div>
-      <div class="hint" id="hintText"></div>
-    </div>
-
-    <div class="grid" style="margin-top:16px;" id="transformRow">
-      <div>
-        <label for="transformMode">Transformação</label>
-        <select id="transformMode">
-          <option value="original">Original</option>
-          <option value="retrograde">Retrógrado</option>
-          <option value="inversion">Inversão</option>
-          <option value="retro-inv">Retrógrado-invertido</option>
-        </select>
-      </div>
-    </div>
-
-    <button class="generate" id="genBtn">Gerar / Sortear Melodias</button>
+<div class="panel">
+  <div class="mode-switch">
+    <button class="mode-btn active" id="melodyMode">Ditado melódico</button>
+    <button class="mode-btn" id="slonimskyMode">Material Slonimsky</button>
   </div>
 
-  <!-- GLOSSÁRIO DE ESCALAS -->
-  <details class="glossary">
-    <summary>📚 Glossário de Escalas & Graus Relativos</summary>
-    <div class="glossary-content">
-      <div class="glossary-grid">
-        <div class="scale-group">
-          <h4>Escalas Maiores / Modos Naturais</h4>
-          <div class="scale-item"><span class="scale-name">Jônio (Maior)</span><span class="scale-degrees">1, 2, 3, 4, 5, 6, 7</span></div>
-          <div class="scale-item"><span class="scale-name">Dórico</span><span class="scale-degrees">1, 2, b3, 4, 5, 6, b7</span></div>
-          <div class="scale-item"><span class="scale-name">Frígio</span><span class="scale-degrees">1, b2, b3, 4, 5, b6, b7</span></div>
-          <div class="scale-item"><span class="scale-name">Lídio</span><span class="scale-degrees">1, 2, 3, #4, 5, 6, 7</span></div>
-          <div class="scale-item"><span class="scale-name">Mixolídio</span><span class="scale-degrees">1, 2, 3, 4, 5, 6, b7</span></div>
-          <div class="scale-item"><span class="scale-name">Eólio (Menor Natural)</span><span class="scale-degrees">1, 2, b3, 4, 5, b6, b7</span></div>
-          <div class="scale-item"><span class="scale-name">Lócrio</span><span class="scale-degrees">1, b2, b3, 4, b5, b6, b7</span></div>
-        </div>
-        <div class="scale-group">
-          <h4>Famílias Menores (Alteradas)</h4>
-          <div class="scale-item"><span class="scale-name">Menor Harmônica</span><span class="scale-degrees">1, 2, b3, 4, 5, b6, 7</span></div>
-          <div class="scale-item"><span class="scale-name">Frígio Maior</span><span class="scale-degrees">1, b2, 3, 4, 5, b6, b7</span></div>
-          <div class="scale-item"><span class="scale-name">Menor Melódica</span><span class="scale-degrees">1, 2, b3, 4, 5, 6, 7</span></div>
-          <div class="scale-item"><span class="scale-name">Lídio b7 (Dominante)</span><span class="scale-degrees">1, 2, 3, #4, 5, 6, b7</span></div>
-          <div class="scale-item"><span class="scale-name">Alterada (Super Lócria)</span><span class="scale-degrees">1, b2, #2, 3, b5, #5, b7</span></div>
-        </div>
-        <div class="scale-group">
-          <h4>Pentatônicas & Blues</h4>
-          <div class="scale-item"><span class="scale-name">Pentatônica Maior</span><span class="scale-degrees">1, 2, 3, 5, 6</span></div>
-          <div class="scale-item"><span class="scale-name">Pentatônica Menor</span><span class="scale-degrees">1, b3, 4, 5, b7</span></div>
-          <div class="scale-item"><span class="scale-name">Escala Blues</span><span class="scale-degrees">1, b3, 4, #4, 5, b7</span></div>
-        </div>
-        <div class="scale-group">
-          <h4>Escalas Simétricas</h4>
-          <div class="scale-item"><span class="scale-name">Tons Inteiros (Hexatônica)</span><span class="scale-degrees">1, 2, 3, #4, #5, b7</span></div>
-          <div class="scale-item"><span class="scale-name">Diminuta (Tom-Semitom)</span><span class="scale-degrees">1, 2, b3, 4, b5, b6, 6, 7</span></div>
-          <div class="scale-item"><span class="scale-name">Dom. Dim (Semitom-Tom)</span><span class="scale-degrees">1, b2, #2, 3, #4, 5, 6, b7</span></div>
-          <div class="scale-item"><span class="scale-name">Aumentada (Tom-Sem-Sem)</span><span class="scale-degrees">1, #2, 3, 5, b6, 7</span></div>
-        </div>
-      </div>
-    </div>
-  </details>
-
-  <!-- BARRA DE CONTROLE DE ÁUDIO & METRÔNOMO -->
-  <div class="playback-controls">
+  <div id="melodyPanel">
+    <div class="section-title">Construção do exercício</div>
     <div class="grid">
-      <div>
-        <label for="bpm">Andamento (BPM)</label>
-        <input type="number" id="bpm" value="70" min="30" max="240">
-      </div>
-      <div>
-        <label>Ecossistema de Áudio</label>
-        <div class="toggle-row">
-          <input type="checkbox" id="useMetronome" checked>
-          <span>Metrônomo (C/ Count-in)</span>
-        </div>
-        <div class="toggle-row">
-          <input type="checkbox" id="useLoop">
-          <span>Loop Contínuo (Apreciação)</span>
-        </div>
-      </div>
-      <div>
-        <label>Controle Final</label>
-        <button class="btn-action btn-stop" id="stopBtn">⏹ Parar Áudio</button>
-      </div>
+      <div><label>Tonalidade</label><select id="key"></select></div>
+      <div><label>Escala</label><select id="scale">
+        <option value="major">Maior / Jônio</option><option value="minor">Menor natural / Eólio</option>
+        <option value="harmonic">Menor harmônica</option><option value="melodic">Menor melódica</option>
+        <option value="pentMajor">Pentatônica maior</option><option value="pentMinor">Pentatônica menor</option>
+      </select></div>
+      <div><label>Compassos</label><select id="bars"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></div>
+      <div><label>Compasso</label><select id="meter"><option value="4">4/4</option><option value="3">3/4</option><option value="2">2/4</option></select></div>
+      <div><label>Notas por tempo</label><select id="density"><option value="1" selected>1 — básico</option><option value="2">2 — colcheias</option></select></div>
+      <div><label>Âmbito</label><select id="range"><option value="7">5ª</option><option value="12" selected>8ª</option><option value="16">10ª</option></select></div>
     </div>
+
+    <div class="grid" style="margin-top:16px">
+      <div><label>Movimento</label><select id="motion">
+        <option value="step" selected>Predominantemente conjunto</option><option value="mixed">Misto</option><option value="leap">Saltos frequentes</option>
+      </select></div>
+      <div><label>Salto máximo</label><select id="maxLeap"><option value="2">2ª</option><option value="3" selected>3ª</option><option value="5">4ª/5ª</option><option value="7">5ª/6ª</option></select></div>
+      <div><label>Contorno</label><select id="contour"><option value="mixed" selected>Misto</option><option value="asc">Ascendente</option><option value="desc">Descendente</option><option value="arch">Arqueado</option><option value="wave">Ondulante</option></select></div>
+      <div><label>Nota inicial</label><select id="startDegree"></select></div>
+      <div><label>Nota final</label><select id="endDegree"></select></div>
+      <div><label>Foco</label><select id="focus">
+        <option value="scale" selected>Escala / graus</option><option value="tonic">Tônica e dominantes</option><option value="thirds">3ªs</option><option value="fourths">4ªs/5ªs</option><option value="chromatic">Cromatismo controlado</option><option value="slonimsky">Célula Slonimsky</option>
+      </select></div>
+    </div>
+
+    <div class="grid" style="margin-top:16px">
+      <div><label>Ritmo</label><select id="rhythm">
+        <option value="basic" selected>Básico — semínimas/mínimas</option><option value="eighth">Colcheias</option><option value="varied">Variado</option>
+      </select></div>
+      <div><label>Repetição auditiva</label><select id="replays"><option value="1">1 vez</option><option value="2" selected>2 vezes</option><option value="3">3 vezes</option></select></div>
+      <div><label>Dificuldade</label><select id="difficulty"><option value="1" selected>1 — reconhecimento</option><option value="2">2 — graus</option><option value="3">3 — saltos</option><option value="4">4 — cromático</option></select></div>
+    </div>
+    <div class="hint">A melodia é sorteada por candidatos e filtrada pelas regras acima. O objetivo não é aleatoriedade pura: é variedade dentro de um espaço musical controlado.</div>
   </div>
 
-  <!-- BARRA DE CONTROLE DO DITADO -->
-  <div class="dictation-control-bar" id="dictationBar" style="display:none;">
-    <div>
-      <strong style="color:var(--gold); font-size: 13px;">TESTE SUA PERCEPÇÃO</strong>
-      <div style="font-size:11px; color:#a09d90; margin-top:2px;">Selecione abaixo a sequência de graus que corresponde ao áudio tocado.</div>
+  <div id="slonimskyPanel" style="display:none">
+    <div class="section-title">Célula intervalar como material melódico</div>
+    <div class="grid">
+      <div><label>Padrão</label><input id="pattern" value="+2 +2 +1 -2 -2"></div>
+      <div><label>Transposição</label><input id="transpose" type="number" placeholder="automática"></div>
+      <div><label>Repetições</label><input id="reps" type="number" min="1" max="12" value="2"></div>
+      <div><label>Transformação</label><select id="transform"><option value="original">Original</option><option value="retrograde">Retrógrado</option><option value="inversion">Inversão</option><option value="retro-inv">Retrógrado-invertido</option></select></div>
     </div>
-    <div class="dictation-btns">
-      <button class="btn-action" id="playRootBtn">🎵 Tocar Tônica (Âncora)</button>
-      <button class="btn-action" id="replayBtn">🔊 Ouvir Ditado</button>
-      <button class="btn-action btn-reveal" id="revealBtn">👁️ Revelar / Pular</button>
-    </div>
+    <div class="hint">Neste modo, a célula Slonimsky é transformada em material para o ditado. O sistema preserva a lógica intervalar, mas a saída continua sendo tratada como exercício auditivo.</div>
   </div>
 
-  <div id="resultsMeta"></div>
-  <div id="results"><div class="empty">Escolha os parâmetros acima e clique em gerar</div></div>
+  <button class="generate" id="generate">GERAR NOVO DITADO</button>
+</div>
+
+<div class="panel">
+  <div class="section-title">Áudio</div>
+  <div class="grid">
+    <div><label>Andamento</label><input id="bpm" type="number" value="70" min="30" max="220"></div>
+    <div><label>Âncora</label><div class="controls"><button class="btn" id="root">♪ Tônica</button><button class="btn red" id="stop">■ Parar</button></div></div>
+    <div><label>Execução</label><div class="toggle"><input id="countin" type="checkbox" checked><span>Count-in</span></div><div class="toggle"><input id="loop" type="checkbox"><span>Loop</span></div></div>
+  </div>
+  <div class="controls" style="margin-top:14px">
+    <button class="btn" id="play">▶ Ouvir ditado</button>
+    <button class="btn blue" id="reveal">Revelar resposta</button>
+    <button class="btn" id="new">↻ Novo ditado</button>
+  </div>
+</div>
+
+<div id="meta"></div>
+<div id="results"><div class="empty">Clique em GERAR NOVO DITADO</div></div>
+<footer>B.E.M. — Bloco de Estudos Musicais · Motor de geração melódica controlada</footer>
 </div>
 
 <script>
-const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
-const DEGREES = ['1', 'b2', '2', 'b3', '3', '4', '#4', '5', 'b6', '6', 'b7', '7'];
-const CAP = 300; 
+const NOTE=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const SCALES={
+ major:[0,2,4,5,7,9,11], minor:[0,2,3,5,7,8,10], harmonic:[0,2,3,5,7,8,11],
+ melodic:[0,2,3,5,7,9,11], pentMajor:[0,2,4,7,9], pentMinor:[0,3,5,7,10]
+};
+const DEG=['1','b2','2','b3','3','4','#4','5','b6','6','b7','7'];
+let audioCtx=null, nodes=[], loopTimer=null, current=null, mode='melody';
 
-const startSel = document.getElementById('startNote');
-NOTE_NAMES.forEach((n,i)=>{
-  const o = document.createElement('option');
-  o.value = i; o.textContent = n;
-  startSel.appendChild(o);
-});
+const $=id=>document.getElementById(id);
+NOTE.forEach((n,i)=>$('key').add(new Option(n,i)));
+for(let i=0;i<12;i++){ $('startDegree').add(new Option(DEG[i],i)); $('endDegree').add(new Option(DEG[i],i)); }
+$('startDegree').value=0;$('endDegree').value=0;
 
-const divisionSel = document.getElementById('division');
-const kSel = document.getElementById('kcount');
-const orderSel = document.getElementById('orderMode');
-const transformSel = document.getElementById('transformMode');
-const sameCheckbox = document.getElementById('samePattern');
-const hintText = document.getElementById('hintText');
-const genBtn = document.getElementById('genBtn');
-const resultsDiv = document.getElementById('results');
-const resultsMeta = document.getElementById('resultsMeta');
-const appModeSel = document.getElementById('appMode');
-const dictationBar = document.getElementById('dictationBar');
-const replayBtn = document.getElementById('replayBtn');
-const revealBtn = document.getElementById('revealBtn');
-const playRootBtn = document.getElementById('playRootBtn');
-const stopBtn = document.getElementById('stopBtn');
-
-const patternInput = document.getElementById('patternInput');
-const transposeStepInput = document.getElementById('transposeStep');
-const repeatCountInput = document.getElementById('repeatCount');
-const patternHint = document.getElementById('patternHint');
-const patternPanel = document.getElementById('patternPanel');
-const pillarsPanel = document.getElementById('pillarsPanel');
-const modeBtnPattern = document.getElementById('modeBtnPattern');
-const modeBtnPillars = document.getElementById('modeBtnPillars');
-const transformRow = document.getElementById('transformRow');
-
-let currentMode = 'pattern';
-let activeDictationNotes = null;
-
-// ÁUDIO E SINTETIZADOR
-let audioCtx = null;
-let activeAudioNodes = [];
-let loopTimeout = null;
-
-function stopAudio() {
-  if(loopTimeout) clearTimeout(loopTimeout);
-  activeAudioNodes.forEach(node => {
-    try { node.stop(); node.disconnect(); } catch(e){}
-  });
-  activeAudioNodes = [];
+function stop(){
+ if(loopTimer)clearTimeout(loopTimer); loopTimer=null;
+ nodes.forEach(n=>{try{n.stop();n.disconnect()}catch(e){}});
+ nodes=[];
 }
+$('stop').onclick=stop;
 
-stopBtn.addEventListener('click', stopAudio);
-
-function playTone(freq, time, duration, type='triangle', vol=0.25) {
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.type = type;
-  osc.frequency.value = freq;
-  
-  gain.gain.setValueAtTime(0.0001, time);
-  gain.gain.exponentialRampToValueAtTime(vol, time + 0.02);
-  gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
-  
-  osc.connect(gain).connect(audioCtx.destination);
-  osc.start(time);
-  osc.stop(time + duration + 0.05);
-  activeAudioNodes.push(osc);
+function tone(freq,t,dur,type='triangle',vol=.22){
+ const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.value=freq;
+ g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+ o.connect(g).connect(audioCtx.destination);o.start(t);o.stop(t+dur+.05);nodes.push(o);
 }
+function ensureAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();}
+function midiFreq(m){return 440*Math.pow(2,(m-69)/12)}
 
-function playRootAnchor() {
-  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  if(audioCtx.state === 'suspended') audioCtx.resume();
-  stopAudio();
-  
-  const startOffset = parseInt(startSel.value);
-  const midi = 60 + startOffset;
-  const freqRoot = 440 * Math.pow(2, (midi-69)/12);
-  const freqFifth = 440 * Math.pow(2, (midi+7-69)/12);
-  
-  const now = audioCtx.currentTime;
-  playTone(freqRoot, now, 2.5, 'sine', 0.4);
-  playTone(freqFifth, now, 2.5, 'sine', 0.2);
+function play(notes){
+ if(!notes)return;ensureAudio();stop();
+ const bpm=Math.max(30,parseInt($('bpm').value)||70), beat=60/bpm, dur=beat/2;
+ let t=audioCtx.currentTime+.1;
+ if($('countin').checked){for(let i=0;i<4;i++)tone(i===0?880:440,t+i*beat,.08,'square',.12);t+=4*beat}
+ notes.forEach((n,i)=>{tone(midiFreq(60+parseInt($('key').value)+n),t,dur*.88,'triangle',.23);t+=dur});
+ if($('loop').checked){loopTimer=setTimeout(()=>play(notes),(t-audioCtx.currentTime+beat)*1000)}
 }
+$('play').onclick=()=>play(current?.notes);
+$('root').onclick=()=>{ensureAudio();stop();let r=60+parseInt($('key').value),t=audioCtx.currentTime+.1;tone(midiFreq(r),t,2.5,'sine',.35);tone(midiFreq(r+7),t,2.5,'sine',.16)};
 
-playRootBtn.addEventListener('click', playRootAnchor);
-
-function playMelody(notes){
-  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  if(audioCtx.state === 'suspended') audioCtx.resume();
-  
-  stopAudio();
-  
-  const bpm = parseInt(document.getElementById('bpm').value) || 70;
-  const useMetronome = document.getElementById('useMetronome').checked;
-  const useLoop = document.getElementById('useLoop').checked;
-  
-  const beatDur = 60 / bpm;
-  const noteDur = beatDur / 2;
-  
-  let t = audioCtx.currentTime + 0.1;
-
-  if (useMetronome) {
-    for(let i=0; i<4; i++) {
-      const metFreq = (i === 0) ? 880 : 440;
-      playTone(metFreq, t + (i * beatDur), 0.1, 'square', 0.15);
-    }
-    t += 4 * beatDur;
-  }
-
-  notes.forEach((n, idx)=>{
-    const midi = 60 + n.offset;
-    const freq = 440 * Math.pow(2, (midi-69)/12);
-    playTone(freq, t, noteDur * 0.9, 'triangle', 0.25);
-    
-    if (useMetronome && idx % 2 === 0) {
-      const beatIdx = (idx / 2) % 4;
-      const metFreq = (beatIdx === 0) ? 880 : 440;
-      playTone(metFreq, t, 0.05, 'square', 0.08);
-    }
-    t += noteDur;
-  });
-
-  if (useLoop) {
-    const totalDuration = t - audioCtx.currentTime;
-    loopTimeout = setTimeout(() => {
-      playMelody(notes);
-    }, (totalDuration + (beatDur * 4)) * 1000);
-  }
+function parsePattern(s){return s.trim().split(/[,\s]+/).map(Number).filter(x=>Number.isFinite(x)&&x!==0)}
+function degreeOf(offset){let x=((offset%12)+12)%12;return DEG[x]}
+function render(notes){
+ return notes.map((n,i)=>`<span class="${i===0||i===notes.length-1?'pillar':'interp'}">${degreeOf(n)}</span>`).join('<span class="sep">–</span>')
 }
+function intervalText(notes){return notes.slice(1).map((n,i)=>{let d=n-notes[i];return d>=0?'+'+d:d}).join(' ')}
+function noteNames(notes){return notes.map(n=>NOTE[(parseInt($('key').value)+n+120)%12]).join(' – ')}
 
-// LOGICA SLONIMSKY
-function setMode(mode){
-  currentMode = mode;
-  modeBtnPattern.classList.toggle('active', mode==='pattern');
-  modeBtnPillars.classList.toggle('active', mode==='pillars');
-  patternPanel.style.display = mode==='pattern' ? '' : 'none';
-  pillarsPanel.style.display = mode==='pillars' ? '' : 'none';
-  if(mode==='pattern') updatePatternHint();
-}
-modeBtnPattern.addEventListener('click', ()=>setMode('pattern'));
-modeBtnPillars.addEventListener('click', ()=>setMode('pillars'));
-
-document.querySelectorAll('.preset-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    patternInput.value = btn.dataset.preset;
-    updatePatternHint();
-  });
-});
-
-function parsePattern(str){
-  return str.trim().split(/[\s,]+/).filter(Boolean).map(tok=>parseInt(tok,10)).filter(v=>!isNaN(v) && v!==0);
-}
-
-function updatePatternHint(){
-  const pattern = parsePattern(patternInput.value);
-  if(pattern.length === 0){
-    patternHint.textContent = 'Digite ao menos um intervalo.';
-    return;
-  }
-  const sum = pattern.reduce((a,b)=>a+b,0);
-  const step = transposeStepInput.value ? parseInt(transposeStepInput.value,10) : sum;
-  const reps = parseInt(repeatCountInput.value || 1, 10);
-  const totalSpan = step * reps;
-  const closesOctave = totalSpan !== 0 && totalSpan % 12 === 0;
-  patternHint.textContent = `Célula de ${pattern.length} intervalo(s), soma ${sum>=0?'+':''}${sum}. Transposição: ${step>=0?'+':''}${step} × ${reps} = ${totalSpan}`
-    + (closesOctave ? ' (fecha em oitava exata).' : ' (cadeia livre).');
-}
-patternInput.addEventListener('input', updatePatternHint);
-transposeStepInput.addEventListener('input', updatePatternHint);
-repeatCountInput.addEventListener('input', updatePatternHint);
-
-function buildFromPattern(start, pattern, transposeStep, repeatCount){
-  const notes = [];
-  for(let r=0; r<=repeatCount; r++){
-    const anchor = start + r*transposeStep;
-    notes.push({offset: anchor, pillar:true});
-    if(r < repeatCount){
-      let cursor = anchor;
-      pattern.forEach(step=>{
-        cursor += step;
-        notes.push({offset: cursor, pillar:false});
-      });
-    }
-  }
-  return notes;
-}
-
-function factorial(n){ let r=1; for(let i=2;i<=n;i++) r*=i; return r; }
-function permutations(arr){
-  if(arr.length<=1) return [arr.slice()];
-  const result=[];
-  for(let i=0;i<arr.length;i++){
-    const rest = arr.slice(0,i).concat(arr.slice(i+1));
-    permutations(rest).forEach(p=>result.push([arr[i]].concat(p)));
-  }
-  return result;
-}
-function gapSize(){ return 12 / parseInt(divisionSel.value); }
-
-function refreshKOptions(){
-  const gap = gapSize();
-  const maxK = gap - 1;
-  kSel.innerHTML = '';
-  for(let k=0;k<=maxK;k++){
-    const o = document.createElement('option');
-    o.value = k;
-    o.textContent = k === 0 ? '0 (apenas os pilares)' : k;
-    kSel.appendChild(o);
-  }
-  kSel.disabled = maxK === 0;
-  updateHint();
-}
-
-function combinations(arr, k){
-  if(k === 0) return [[]];
-  if(k > arr.length) return [];
-  const result = [];
-  function backtrack(start, combo){
-    if(combo.length === k){ result.push(combo.slice()); return; }
-    for(let i=start;i<arr.length;i++){
-      combo.push(arr[i]);
-      backtrack(i+1, combo);
-      combo.pop();
-    }
-  }
-  backtrack(0, []);
-  return result;
-}
-
-function updateHint(){
-  const n = parseInt(divisionSel.value);
-  const gap = gapSize();
-  const k = parseInt(kSel.value || 0);
-  const interior = gap - 1;
-  const orderMult = orderSel.value === 'zigzag' ? factorial(k) : 1;
-  const combosPerGap = binomial(interior, k) * orderMult;
-  let total = sameCheckbox.checked ? combosPerGap : Math.pow(combosPerGap, n);
-  hintText.textContent = `${n} pilares, intervalo de ${gap} semitons, ${interior} posição(ões) interna(s). Combinações: ${total.toLocaleString('pt-BR')}`;
-}
-
-function binomial(n,k){
-  if(k<0||k>n) return 0;
-  let res = 1;
-  for(let i=0;i<k;i++){ res = res * (n-i) / (i+1); }
-  return Math.round(res);
-}
-
-divisionSel.addEventListener('change', refreshKOptions);
-kSel.addEventListener('change', updateHint);
-orderSel.addEventListener('change', updateHint);
-sameCheckbox.addEventListener('change', updateHint);
-refreshKOptions();
-setMode('pattern');
-
-function buildMelodySameCombo(start, n, gap, combo){
-  const notes = [];
-  for(let g=0; g<n; g++){
-    const pillarOffset = g*gap;
-    notes.push({offset: start+pillarOffset, pillar:true});
-    combo.forEach(c => notes.push({offset: start+pillarOffset+c, pillar:false}));
-  }
-  notes.push({offset: start + n*gap, pillar:true});
-  return notes;
-}
-
-function buildMelodyVaryCombo(start, n, gap, comboPerGap){
-  const notes = [];
-  for(let g=0; g<n; g++){
-    const pillarOffset = g*gap;
-    notes.push({offset: start+pillarOffset, pillar:true});
-    comboPerGap[g].forEach(c => notes.push({offset: start+pillarOffset+c, pillar:false}));
-  }
-  notes.push({offset: start + n*gap, pillar:true});
-  return notes;
-}
-
-function cartesianProduct(arrays, cap){
-  let results = [[]];
-  for(const arr of arrays){
-    const next = [];
-    for(const prefix of results){
-      for(const item of arr){
-        next.push(prefix.concat([item]));
-        if(next.length >= cap * 50) break;
-      }
-    }
-    results = next;
-    if(results.length > cap * 200) break;
-  }
-  return results.slice(0, cap);
-}
-
-function renderMelodyText(notes, tonicOffset){
-  return notes.map(n => {
-    const diff = n.offset - tonicOffset;
-    const interval = ((diff % 12) + 12) % 12;
-    let text = DEGREES[interval];
-    const octaves = Math.floor(diff / 12);
-    if (octaves > 0) text += "'".repeat(octaves);
-    if (octaves < 0) text += ",".repeat(Math.abs(octaves));
-    return text;
-  }).join(' – ');
-}
-
-function renderMelodyHTML(notes, tonicOffset){
-  return notes.map(n => {
-    const diff = n.offset - tonicOffset;
-    const interval = ((diff % 12) + 12) % 12;
-    let text = DEGREES[interval];
-    const octaves = Math.floor(diff / 12);
-    if (octaves > 0) text += "'".repeat(octaves);
-    if (octaves < 0) text += ",".repeat(Math.abs(octaves));
-    return `<span class="${n.pillar?'pillar':'interp'}">${text}</span>`;
-  }).join('<span class="sep">–</span>');
-}
-
-function intervalString(notes){
-  const ivs = [];
-  for(let i=1;i<notes.length;i++){
-    ivs.push(notes[i].offset - notes[i-1].offset);
-  }
-  return ivs.map(v => v>=0 ? '+'+v : String(v)).join(' ');
-}
-
-function applyTransform(notes, mode){
-  if(mode === 'original') return notes;
-  const first = notes[0].offset;
-  if(mode === 'retrograde') return notes.slice().reverse();
-  if(mode === 'inversion') return notes.map(n => ({offset: 2*first - n.offset, pillar:n.pillar}));
-  if(mode === 'retro-inv'){
-    const inv = notes.map(n => ({offset: 2*first - n.offset, pillar:n.pillar}));
-    return inv.slice().reverse();
-  }
-  return notes;
-}
-
-const SYMMETRIC_SETS = [
-  {name:'tons inteiros', pcs:[0,2,4,6,8,10]},
-  {name:'tons inteiros', pcs:[1,3,5,7,9,11]},
-  {name:'octatônica', pcs:[0,1,3,4,6,7,9,10]},
-  {name:'octatônica', pcs:[1,2,4,5,7,8,10,11]},
-  {name:'octatônica', pcs:[0,2,3,5,6,8,9,11]},
-  {name:'aumentada (hexatônica)', pcs:[0,3,4,7,8,11]},
-  {name:'aumentada (hexatônica)', pcs:[1,4,5,8,9,0]},
-  {name:'aumentada (hexatônica)', pcs:[2,5,6,9,10,1]},
-  {name:'aumentada (hexatônica)', pcs:[3,6,7,10,11,2]},
-];
-function classify(notes){
-  const pcSet = [...new Set(notes.map(n => ((n.offset%12)+12)%12))];
-  const matches = SYMMETRIC_SETS.filter(s => pcSet.every(pc => s.pcs.includes(pc)));
-  if(matches.length === 0) return 'Sem coleção simétrica específica';
-  return 'Subconjunto de: ' + [...new Set(matches.map(m=>m.name))].join(', ');
-}
-
-genBtn.addEventListener('click', ()=>{
-  stopAudio();
-  const isDictation = appModeSel.value === 'dictation';
-  dictationBar.style.display = isDictation ? 'flex' : 'none';
-
-  if(currentMode === 'pattern'){
-    const start = parseInt(startSel.value);
-    const pattern = parsePattern(patternInput.value);
-    if(pattern.length === 0){
-      resultsMeta.innerHTML = '';
-      resultsDiv.innerHTML = '<div class="empty">Digite um padrão intervalar válido</div>';
-      return;
-    }
-    const sum = pattern.reduce((a,b)=>a+b,0);
-    const step = transposeStepInput.value ? parseInt(transposeStepInput.value,10) : sum;
-    const reps = Math.max(1, parseInt(repeatCountInput.value || 1, 10));
-    const base = buildFromPattern(start, pattern, step, reps);
-
-    if(isDictation){
-      activeDictationNotes = applyTransform(base, transformSel.value);
-      renderDictationQuiz(activeDictationNotes);
-    } else {
-      const transformMode = transformSel.value;
-      const notes = applyTransform(base, transformMode);
-      renderExploreResults([notes], 1);
-    }
-  } else {
-    const start = parseInt(startSel.value);
-    const n = parseInt(divisionSel.value);
-    const gap = gapSize();
-    const k = parseInt(kSel.value || 0);
-    const interior = Array.from({length: gap-1}, (_,i)=>i+1);
-    const transformMode = transformSel.value;
-    const rawCombos = combinations(interior, k);
-    const variantsPerGap = orderSel.value === 'zigzag' ? rawCombos.flatMap(c => permutations(c)) : rawCombos;
-
-    let melodies = [];
-    let totalCount = 0;
-
-    if(sameCheckbox.checked){
-      totalCount = variantsPerGap.length;
-      const use = isDictation ? [variantsPerGap[Math.floor(Math.random() * variantsPerGap.length)]] : variantsPerGap.slice(0, CAP);
-      melodies = use.map(c => applyTransform(buildMelodySameCombo(start, n, gap, c), transformMode));
-    } else {
-      const perGapArrays = Array.from({length:n}, ()=>variantsPerGap);
-      totalCount = Math.pow(variantsPerGap.length, n);
-      if(isDictation){
-        const randomComboSet = Array.from({length:n}, ()=>variantsPerGap[Math.floor(Math.random() * variantsPerGap.length)]);
-        melodies = [applyTransform(buildMelodyVaryCombo(start, n, gap, randomComboSet), transformMode)];
-      } else {
-        const combos = cartesianProduct(perGapArrays, CAP);
-        melodies = combos.map(comboSet => applyTransform(buildMelodyVaryCombo(start, n, gap, comboSet), transformMode));
-      }
-    }
-
-    if(isDictation && melodies.length > 0){
-      activeDictationNotes = melodies[0];
-      renderDictationQuiz(melodies[0]);
-    } else {
-      renderExploreResults(melodies, totalCount);
-    }
-  }
-});
-
-replayBtn.addEventListener('click', ()=>{
-  if(activeDictationNotes) playMelody(activeDictationNotes);
-});
-
-// FUNÇÃO DO QUIZ DE DITADO
-function renderDictationQuiz(notes){
-  const tonic = notes[0].offset;
-  const correctStr = renderMelodyText(notes, tonic);
-  
-  // Gerar distratores
-  const options = [correctStr];
-  let attempts = 0;
-  
-  while(options.length < 4 && attempts < 100) {
-    attempts++;
-    let fake = [];
-    const type = Math.random();
-    
-    if(type < 0.5) {
-      // Mutação 1: Mesmos intervalos, mas começando em grau diferente (Deslocamento Diatônico/Cromático)
-      const shift = Math.floor(Math.random() * 11) + 1;
-      fake = notes.map(n => ({offset: n.offset + shift, pillar: n.pillar}));
-    } else {
-      // Mutação 2: Mesmo grau inicial, alterando saltos internos
-      let cursor = tonic;
-      fake.push({offset: cursor, pillar: true});
-      for(let i=1; i<notes.length; i++) {
-          const diff = notes[i].offset - notes[i-1].offset;
-          // Altera o intervalo em +1 ou -1 semitom
-          const mut = diff + (Math.random() < 0.5 ? 1 : -1);
-          cursor += mut;
-          fake.push({offset: cursor, pillar: notes[i].pillar});
-      }
-    }
-    
-    const fakeStr = renderMelodyText(fake, tonic);
-    if(!options.includes(fakeStr)) {
-      options.push(fakeStr);
-    }
-  }
-
-  // Embaralhar as opções
-  options.sort(() => Math.random() - 0.5);
-
-  let optionsHtml = '<div class="quiz-options" id="quizOptionsContainer">';
-  options.forEach((opt, idx) => {
-    const isCorrect = opt === correctStr;
-    optionsHtml += `<button class="quiz-btn" data-correct="${isCorrect}">${opt}</button>`;
-  });
-  optionsHtml += '</div>';
-
-  resultsMeta.innerHTML = `<div class="legend"><span class="p"><span class="dot"></span>Nota de referência/pilar</span></div>`;
-  
-  resultsDiv.innerHTML = `
-    <div class="result" id="dictationResultBox">
-      <div class="idx">#1</div>
-      <div class="notes" style="width:100%">
-        <div class="form-label" id="quizLabel">O que você ouviu? (Selecione a sequência correta)</div>
-        
-        ${optionsHtml}
-        
-        <div class="reveal-content" style="display:none;" id="revealContent">
-          <div class="form-label" style="color: #4CAF50; margin-bottom: 12px;">✓ Resposta Correta e Análise</div>
-          <div class="note-line">${renderMelodyHTML(notes, tonic)}</div>
-          <div class="intervals">Padrão intervalar original: ${intervalString(notes)}</div>
-          <div class="classif">${classify(notes)}</div>
-        </div>
-      </div>
-      <button class="play-btn" title="Tocar" id="inlinePlay">▶</button>
-    </div>
-  `;
-
-  document.getElementById('inlinePlay').addEventListener('click', ()=>playMelody(notes));
-  revealBtn.textContent = '👁️ Revelar / Pular';
-  revealBtn.disabled = false;
-
-  // Lógica de clique nos botões do quiz
-  document.querySelectorAll('.quiz-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-       if (e.target.dataset.correct === "true") {
-          e.target.classList.add('correct');
-          document.getElementById('quizLabel').innerHTML = '<span style="color:#4CAF50">✓ Brilhante! Você acertou.</span>';
-          showRevealContent();
-       } else {
-          e.target.classList.add('wrong');
-          // Remove a classe após a animação para permitir clicar de novo se quiser
-          setTimeout(() => e.target.classList.remove('wrong'), 400);
-       }
-    });
-  });
-
-  // Sobrescrevendo o evento do botão global Revelar
-  revealBtn.onclick = () => {
-     document.getElementById('quizLabel').innerHTML = '<span style="color:#e37462">👁️ Resposta Revelada Manualmente</span>';
-     // Marca a opção correta visualmente antes de revelar o painel
-     document.querySelectorAll('.quiz-btn').forEach(b => {
-       if(b.dataset.correct === "true") b.classList.add('correct');
-     });
-     showRevealContent();
-  };
-}
-
-function showRevealContent() {
-   const content = document.getElementById('revealContent');
-   const optionsContainer = document.getElementById('quizOptionsContainer');
-   if(content) {
-     content.style.display = 'block';
-     optionsContainer.style.opacity = '0.6';
-     optionsContainer.style.pointerEvents = 'none'; // Desabilita novos cliques no quiz
-     revealBtn.textContent = '✔️ Resposta Verificada';
-     revealBtn.disabled = true;
+function candidateSequence(){
+ const key=parseInt($('key').value), scale=SCALES[$('scale').value], bars=parseInt($('bars').value), meter=parseInt($('meter').value), density=parseInt($('density').value);
+ const len=bars*meter*density, start=parseInt($('startDegree').value), end=parseInt($('endDegree').value);
+ const range=parseInt($('range').value), maxLeap=parseInt($('maxLeap').value), motion=$('motion').value, contour=$('contour').value, focus=$('focus').value;
+ let seq=[nearestScaleOffset(start,scale)]; let direction=0;
+ for(let i=1;i<len;i++){
+   let choices=[];
+   for(let k=0;k<scale.length;k++)for(let oct=-1;oct<=1;oct++){
+     let v=scale[k]+12*oct, d=v-seq[i-1];
+     if(d===0||Math.abs(d)>range||Math.abs(d)>maxLeap+1&&motion!=='leap')continue;
+     if(motion==='step'&&Math.abs(d)>4)continue;
+     if(motion==='leap'&&Math.abs(d)<3)continue;
+     if(focus==='thirds'&&Math.abs(d)!==3&&Math.abs(d)!==4)continue;
+     if(focus==='fourths'&&![5,7].includes(Math.abs(d)))continue;
+     if(focus==='tonic'&&i%3!==0){} 
+     if(contour==='asc'&&d<0)continue;if(contour==='desc'&&d>0)continue;
+     if(contour==='arch'&&i<len/2&&d<0)continue;if(contour==='arch'&&i>=len/2&&d>0)continue;
+     if(contour==='wave'&&direction!==0&&Math.sign(d)===direction){} 
+     choices.push(v);
    }
+   if(!choices.length) return null;
+   let pick=choices[Math.floor(Math.random()*choices.length)];
+   direction=Math.sign(pick-seq[i-1]);seq.push(pick);
+ }
+ const finalTarget=nearestScaleOffset(end,scale);
+ const diff=finalTarget-seq[seq.length-1];
+ if(Math.abs(diff)>maxLeap+1)return null;
+ seq[seq.length-1]=finalTarget;
+ if(Math.max(...seq)-Math.min(...seq)>range)return null;
+ if(Math.abs(diff)>maxLeap+1)return null;
+ return seq;
+}
+function nearestScaleOffset(deg,scale){
+ let best=scale[0],dist=999;
+ for(let oct=-1;oct<=1;oct++)for(const v of scale.map(x=>x+12*oct)){let d=Math.abs(v-scale[deg%scale.length]);if(d<dist){dist=d;best=v}}
+ return best;
 }
 
-function renderExploreResults(melodies, totalCount){
-  resultsMeta.innerHTML = '';
-  if(melodies.length === 0){
-    resultsDiv.innerHTML = '<div class="empty">Nenhuma combinação para esses parâmetros</div>';
-    return;
-  }
-
-  const legend = document.createElement('div');
-  legend.className = 'legend';
-  legend.innerHTML = `<span class="p"><span class="dot"></span>pilar (ponto de transposição)</span><span class="i"><span class="dot"></span>nota interpolada</span><br><span style="margin-top:5px;display:inline-block">Graus com (') = oitava acima / Graus com (,) = oitava abaixo</span>`;
-  resultsMeta.appendChild(legend);
-
-  const metaLine = document.createElement('div');
-  metaLine.className = 'meta';
-  metaLine.innerHTML = `<span class="count">Exibindo <b>${melodies.length}</b> de <b>${totalCount.toLocaleString('pt-BR')}</b> melodia(s) possíveis</span>`;
-  resultsMeta.appendChild(metaLine);
-
-  resultsDiv.innerHTML = '';
-  melodies.forEach((notes, idx)=>{
-    const row = document.createElement('div');
-    row.className = 'result';
-    const tonic = notes[0].offset;
-    row.innerHTML = `
-      <div class="idx">${String(idx+1).padStart(3,'0')}</div>
-      <div class="notes">
-        <div class="note-line">${renderMelodyHTML(notes, tonic)}</div>
-        <div class="intervals">padrão intervalar: ${intervalString(notes)}</div>
-        <div class="classif">${classify(notes)}</div>
-      </div>
-      <button class="play-btn" title="Tocar">▶</button>
-    `;
-    row.querySelector('.play-btn').addEventListener('click', ()=>playMelody(notes));
-    resultsDiv.appendChild(row);
-  });
+function slonimskySequence(){
+ const p=parsePattern($('pattern').value);if(!p.length)return null;
+ const reps=Math.max(1,parseInt($('reps').value)||1), step=$('transpose').value===''?p.reduce((a,b)=>a+b,0):parseInt($('transpose').value);
+ let a=[0];
+ for(let r=0;r<reps;r++){let cur=r*step+p.reduce((x,y)=>x+y,0)*0;for(const d of p){cur+=d;a.push(cur)}}
+ const tr=$('transform').value;if(tr==='retrograde')a.reverse();
+ if(tr==='inversion')a=a.map(x=>-x);
+ if(tr==='retro-inv')a=a.map(x=>-x).reverse();
+ return a;
 }
 
-// Inicia no modo Ditado automaticamente
-appModeSel.value = 'dictation';
-genBtn.click();
+function validSlonimsky(a){
+ if(!a||a.length<2)return null;
+ const max=parseInt($('range').value);
+ if(Math.max(...a)-Math.min(...a)>max*2)return null;
+ return a;
+}
+
+function generate(){
+ stop();
+ let notes=null,tries=0;
+ if(mode==='slonimsky'){
+   while(!notes&&tries++<200)notes=validSlonimsky(slonimskySequence());
+ }else{
+   while(!notes&&tries++<500)notes=candidateSequence();
+ }
+ if(!notes){$('results').innerHTML='<div class="empty">Não foi possível satisfazer todas as restrições. Afrouxe um parâmetro.</div>';return}
+ current={notes};
+ renderQuiz();
+}
+function distractors(correct){
+ const out=[correct.join(',')], max=correct.length;
+ for(let z=0;z<100&&out.length<4;z++){
+   let f=correct.slice();
+   const pos=1+Math.floor(Math.random()*Math.max(1,max-2));
+   f[pos]+=Math.random()<.5?1:-1;
+   if(Math.random()<.35)f=f.map(x=>-x);
+   const s=f.join(',');if(!out.includes(s))out.push(s);
+ }
+ return out;
+}
+function renderQuiz(){
+ const n=current.notes, correct=n.join(','), opts=distractors(n).sort(()=>Math.random()-.5);
+ $('meta').innerHTML=`<div class="meta"><span class="badge">${$('key').selectedOptions[0].text}</span><span class="badge">${$('bars').value} compasso(s)</span><span class="badge">graus relativos</span></div>`;
+ $('results').innerHTML=`
+ <div class="result">
+   <div class="result-head"><div><div class="idx">DITADO #1</div><div class="form-label" style="margin-top:7px">O que você ouviu?</div></div></div>
+   <div class="controls" style="margin:10px 0 14px"><button class="btn" id="qplay">▶ Ouvir</button><button class="btn" id="qroot">♪ Tônica</button></div>
+   <div id="opts">${opts.map(o=>`<button class="quiz-option" data-value="${o}">${o.split(',').map(x=>degreeOf(parseInt(x))).join(' – ')}</button>`).join('')}</div>
+   <div class="answer-box" id="answer" style="display:none">
+     <div class="form-label">Resposta / análise</div>
+     <div class="note-line">${render(n)}</div>
+     <div style="font-size:11px;color:#7c7969;margin-top:7px">Notas: ${noteNames(n)}</div>
+     <div style="font-size:11px;color:#7c7969;margin-top:4px">Intervalos: ${intervalText(n)}</div>
+     <div class="rhythm-box">♩ ♩ ♩ ♩ | ♩ ♩ ♩ ♩</div>
+   </div>
+ </div>`;
+ $('qplay').onclick=()=>play(n);$('qroot').onclick=()=>$('root').click();
+ document.querySelectorAll('.quiz-option').forEach(b=>b.onclick=()=>{
+   document.querySelectorAll('.quiz-option').forEach(x=>x.disabled=true);
+   if(b.dataset.value===correct){b.classList.add('correct');}
+   else{b.classList.add('wrong');document.querySelectorAll('.quiz-option').forEach(x=>{if(x.dataset.value===correct)x.classList.add('correct')})}
+   $('answer').style.display='block';
+ });
+}
+$('reveal').onclick=()=>{$('answer')?.style.setProperty('display','block');};
+$('generate').onclick=generate;$('new').onclick=generate;
+$('melodyMode').onclick=()=>{mode='melody';$('melodyMode').classList.add('active');$('slonimskyMode').classList.remove('active');$('melodyPanel').style.display='';$('slonimskyPanel').style.display='none'};
+$('slonimskyMode').onclick=()=>{mode='slonimsky';$('slonimskyMode').classList.add('active');$('melodyMode').classList.remove('active');$('melodyPanel').style.display='none';$('slonimskyPanel').style.display=''};
+
+generate();
 </script>
 </body>
 </html>
