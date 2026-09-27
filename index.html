@@ -1,271 +1,1122 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>B.E.M. — Gerador de Ditado Melódico V7</title>
+<title>B.E.M. — Ditado Melódico v2.3</title>
+<script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@500;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0D0D0D;--gold:#C8A030;--gold2:#e0b544;--gold-dim:#8a6f24;--paper:#EDE8DC;--muted:#8a877c;--line:#33312c;--panel:#161613;--blue:#3f88b5;--danger:#b5533f;--ok:#4caf50}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--paper);font-family:'IBM Plex Mono',monospace;padding:28px 20px 80px}.wrap{max-width:980px;margin:auto}
-header{border-bottom:3px solid var(--gold);padding-bottom:18px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:end;gap:18px;flex-wrap:wrap}
-h1{font:700 26px 'IBM Plex Sans';margin:0;text-transform:uppercase}h1 span{color:var(--gold)}.subtitle{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;line-height:1.5;text-align:right}
-.panel{background:var(--panel);border:1px solid var(--line);padding:20px;margin-bottom:20px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
-label,.form-label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--gold);margin-bottom:6px}
-select,input{width:100%;background:#000;color:var(--paper);border:1px solid var(--line);padding:9px 10px;font:14px 'IBM Plex Mono'}select:focus,input:focus{outline:2px solid var(--gold);outline-offset:1px}
-.mode-switch{display:flex;border:1px solid var(--line);margin-bottom:18px}.mode-btn{flex:1;background:#000;color:var(--muted);border:0;border-right:1px solid var(--line);padding:12px;font:700 11px 'IBM Plex Sans';text-transform:uppercase;letter-spacing:1px;cursor:pointer}.mode-btn:last-child{border:0}.mode-btn.active{background:var(--gold);color:#0d0d0d}
-.section-title{font:700 13px 'IBM Plex Sans';text-transform:uppercase;letter-spacing:1px;margin:2px 0 14px;color:var(--paper)}.hint{font-size:11px;color:#7c7969;line-height:1.5;margin-top:8px}
-.preset-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.preset-btn{background:#000;border:1px solid var(--line);color:#c9c6ba;padding:6px 9px;font:11px 'IBM Plex Mono';cursor:pointer}.preset-btn:hover{border-color:var(--gold);color:var(--gold)}
-button.generate{margin-top:18px;width:100%;background:var(--gold);color:#0d0d0d;border:0;padding:14px;font:700 13px 'IBM Plex Sans';letter-spacing:1.5px;text-transform:uppercase;cursor:pointer}button.generate:hover{background:var(--gold2)}
-.toggle{display:flex;gap:8px;align-items:center;margin-top:8px;font-size:11px;color:#c9c6ba}.toggle input{width:auto;accent-color:var(--gold)}
-.controls{display:flex;gap:8px;flex-wrap:wrap}.btn{background:#000;border:1px solid var(--gold);color:var(--gold);padding:10px 13px;font:600 11px 'IBM Plex Mono';cursor:pointer;text-transform:uppercase}.btn:hover{background:var(--gold);color:#0d0d0d}.btn.blue{border-color:var(--blue);color:var(--blue)}.btn.blue:hover{background:var(--blue);color:#fff}.btn.red{border-color:var(--danger);color:var(--danger)}.btn:disabled{opacity:.4;cursor:not-allowed}
-.result{border:1px solid var(--line);border-left:3px solid var(--gold-dim);padding:16px;margin-bottom:12px}.result-head{display:flex;justify-content:space-between;gap:12px;align-items:center}.idx{font-size:10px;color:#665f4e}.note-line{font-size:17px;letter-spacing:.5px;line-height:1.8}.pillar{color:var(--gold);font-weight:600}.interp{color:#c9c6ba}.sep{color:#514c3d;margin:0 3px}.meta{font-size:11px;color:var(--muted);margin-bottom:12px}.empty{text-align:center;color:#5b584a;padding:55px 10px;border:1px dashed var(--line);font-size:12px;text-transform:uppercase}
-.quiz-option{display:block;width:100%;background:#11100e;border:1px solid #3d3a33;color:var(--paper);padding:13px 15px;margin:8px 0;text-align:left;font:13px 'IBM Plex Mono';cursor:pointer}.quiz-option:hover{border-color:var(--gold)}.quiz-option.correct{border-color:var(--ok);background:#152b1b;color:#6ed973}.quiz-option.wrong{border-color:var(--danger);background:#331515;color:#e37462}
-.answer-box{border-top:1px solid var(--line);margin-top:16px;padding-top:14px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.stat{border:1px solid var(--line);padding:12px;background:#11100e}.stat b{display:block;color:var(--gold);font-size:20px;margin-top:4px}
-.rhythm-box{font-size:18px;letter-spacing:3px;margin-top:6px;color:#c9c6ba}.badge{display:inline-block;border:1px solid var(--gold-dim);color:var(--gold);padding:4px 7px;font-size:9px;text-transform:uppercase;letter-spacing:1px;margin-right:5px}
-footer{color:#5b584a;font-size:10px;text-align:center;margin-top:28px}
-@media(max-width:600px){body{padding:20px 12px}.stats{grid-template-columns:1fr}.subtitle{text-align:left}}
+:root{
+  --bg:        #0C0C0C;
+  --panel:     #131313;
+  --panel-2:   #191919;
+  --line:      #262626;
+  --line-gold: rgba(200,160,48,.32);
+  --cream:     #E4E0D8;
+  --gold:      #C8A030;
+  --gold-dim:  #8a6f24;
+  --green:     #A4A96A;
+  --red:       #B84848;
+  --muted:     #7a756a;
+  --muted-2:   #4a4640;
+  --paper:     #F2EDDF;
+  --mono:      'IBM Plex Mono', ui-monospace, Menlo, monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--cream);font-family:var(--mono);font-size:13px;line-height:1.45;-webkit-font-smoothing:antialiased}
+a{color:var(--gold);text-decoration:none}
+
+/* ── SHELL ─────────────────────────────────────────────────── */
+.wrap{max-width:1280px;margin:0 auto;padding:24px 28px 60px}
+
+/* ── HEADER ────────────────────────────────────────────────── */
+.bem-header{
+  display:grid;grid-template-columns:1.1fr 1.4fr 1fr;gap:0;
+  border:1px solid var(--line);margin-bottom:0;
+}
+.bem-header > section{padding:22px 24px;border-right:1px solid var(--line)}
+.bem-header > section:last-child{border-right:0}
+
+.brand-row{display:flex;align-items:flex-start;gap:18px}
+.mandala{
+  width:96px;height:96px;flex:0 0 96px;color:var(--gold);
+  opacity:.85;margin-top:2px;
+}
+.mandala .ring{fill:none;stroke:currentColor;stroke-width:.6}
+.mandala .radial{stroke:currentColor;stroke-width:.6;opacity:.7}
+.mandala .dot{fill:currentColor}
+.mandala .num{fill:currentColor;font-family:var(--mono);font-size:7px;opacity:.8}
+
+.brand-text{}
+.bem-logo{
+  font:700 44px/1 var(--mono);letter-spacing:.02em;color:var(--cream);
+  margin:0 0 6px;
+}
+.bem-logo em{font-style:normal;color:var(--gold);font-weight:400}
+.bem-sublabel{
+  font:500 10px/1.4 var(--mono);letter-spacing:.28em;
+  color:var(--muted);text-transform:uppercase;margin-bottom:12px;
+}
+.bem-tri{
+  font:400 9.5px/1 var(--mono);letter-spacing:.24em;
+  color:var(--muted-2);text-transform:uppercase;
+  display:flex;gap:10px;
+}
+.bem-tri .sep{color:var(--gold-dim)}
+
+.section-label{
+  font:500 10px/1 var(--mono);letter-spacing:.24em;
+  color:var(--gold);text-transform:uppercase;margin-bottom:12px;
+}
+.purpose p{
+  margin:0 0 10px;font:400 12px/1.65 var(--mono);color:var(--cream);
+}
+.purpose strong{
+  color:var(--gold);font-weight:500;font-style:normal;
+}
+.purpose em{color:var(--cream);font-style:normal;opacity:.75}
+
+.pillars{display:grid;grid-template-columns:1fr;gap:6px}
+.pillar{
+  display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:baseline;
+  font:400 11px/1.4 var(--mono);color:var(--cream);
+  padding:3px 0;border-bottom:1px dotted var(--line);
+}
+.pillar:last-child{border-bottom:0}
+.pillar .n{color:var(--gold);font-weight:500}
+.pillar .v{color:var(--cream)}
+
+/* ── PRINCIPLES STRIP ──────────────────────────────────────── */
+.principles{
+  border:1px solid var(--line);border-top:0;
+  padding:18px 24px;margin-bottom:22px;
+}
+.principles .section-label{margin-bottom:14px}
+.principles-row{
+  display:grid;grid-template-columns:repeat(6,1fr);gap:18px;
+}
+.principle{border-left:1px solid var(--line-gold);padding-left:12px}
+.principle h4{
+  font:600 10px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;
+  color:var(--cream);margin:0 0 8px;
+}
+.principle p{
+  margin:0;font:400 10.5px/1.55 var(--mono);color:var(--muted);
+}
+
+/* ── MAIN GRID ─────────────────────────────────────────────── */
+.grid{
+  display:grid;grid-template-columns:340px 1fr;gap:0;
+  border:1px solid var(--line);
+}
+.panel{background:var(--panel);padding:20px 22px}
+.panel.left{border-right:1px solid var(--line)}
+.panel + .panel{border-top:0}
+
+/* ── CONTROLS ──────────────────────────────────────────────── */
+.controls{display:grid;gap:12px}
+.ctrl-row{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+}
+.ctrl{
+  display:grid;gap:5px;
+}
+.ctrl-label{
+  font:500 9.5px/1 var(--mono);letter-spacing:.2em;
+  color:var(--gold);text-transform:uppercase;
+}
+.ctrl-label .idx{color:var(--gold-dim);margin-right:6px}
+select,input{
+  width:100%;background:#080808;color:var(--cream);
+  border:1px solid var(--line);border-radius:0;
+  padding:8px 10px;font:400 12px var(--mono);
+  appearance:none;
+  background-image:linear-gradient(45deg,transparent 50%,var(--muted-2) 50%),
+                   linear-gradient(135deg,var(--muted-2) 50%,transparent 50%);
+  background-position:calc(100% - 14px) 50%, calc(100% - 9px) 50%;
+  background-size:5px 5px,5px 5px;
+  background-repeat:no-repeat;
+}
+input{background-image:none}
+select:focus,input:focus{
+  outline:0;border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset;
+}
+option{background:#080808;color:var(--cream)}
+
+.divider{
+  border:0;border-top:1px solid var(--line);margin:12px 0;
+}
+.divider.gold{border-top-color:var(--line-gold)}
+
+/* ── BUTTONS ───────────────────────────────────────────────── */
+.actions{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;
+}
+.btn{
+  border:1px solid var(--line);background:transparent;color:var(--cream);
+  border-radius:0;padding:9px 12px;cursor:pointer;
+  font:500 10.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;
+  transition:border-color .12s,color .12s,background .12s;
+}
+.btn:hover{border-color:var(--gold);color:var(--gold)}
+.btn.primary{
+  grid-column:1 / -1;
+  background:var(--gold);border-color:var(--gold);color:#0C0C0C;font-weight:600;
+}
+.btn.primary:hover{background:#d8b040;border-color:#d8b040;color:#0C0C0C}
+
+/* ── OUTPUT ────────────────────────────────────────────────── */
+.output{display:grid;gap:16px}
+.out-label{
+  font:500 10px/1 var(--mono);letter-spacing:.24em;
+  color:var(--gold);text-transform:uppercase;margin-bottom:10px;
+  display:flex;justify-content:space-between;align-items:baseline;
+}
+.out-label .meta{color:var(--muted-2);letter-spacing:.14em;font-weight:400}
+
+.metric-line{
+  border:1px solid var(--line);background:#080808;
+  padding:10px 14px;color:var(--muted);
+  font:400 11px/1.5 var(--mono);letter-spacing:.04em;
+  margin-bottom:14px;
+}
+.metric-line b{color:var(--gold);font-weight:500;letter-spacing:.08em}
+
+.staff-box{
+  background:var(--paper);border:1px solid var(--line);
+  padding:14px;min-height:220px;overflow:auto;
+}
+.staff-box svg{display:block;margin:0 auto}
+
+/* ── QUIZ ──────────────────────────────────────────────────── */
+.quiz{padding:16px 0 0;border-top:1px solid var(--line);margin-top:16px}
+.quiz-title{
+  font:500 10px/1 var(--mono);letter-spacing:.24em;
+  color:var(--gold);text-transform:uppercase;margin-bottom:12px;
+}
+.quiz-option{
+  display:block;width:100%;text-align:left;
+  background:#080808;border:1px solid var(--line);
+  color:var(--cream);padding:11px 14px;margin:6px 0;
+  font:400 13px var(--mono);letter-spacing:.08em;cursor:pointer;
+  transition:border-color .12s,color .12s,background .12s;
+}
+.quiz-option:hover{border-color:var(--gold);color:var(--gold)}
+.quiz-option.correct{
+  border-color:var(--green);background:rgba(164,169,106,.10);color:var(--green);
+}
+.quiz-option.wrong{
+  border-color:var(--red);background:rgba(184,72,72,.10);color:var(--red);
+}
+
+.answer-block{
+  margin-top:16px;padding-top:14px;border-top:1px solid var(--line);
+}
+.answer-block .out-label{margin-bottom:10px}
+.answer-degrees{
+  font:500 15px/1.6 var(--mono);letter-spacing:.14em;color:var(--cream);
+  margin-bottom:8px;
+}
+.answer-degrees .d{color:var(--gold)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.chip{
+  padding:3px 8px;border:1px solid var(--line);
+  font:400 11px var(--mono);color:var(--gold);letter-spacing:.06em;
+}
+
+/* ── LILYPOND ──────────────────────────────────────────────── */
+details{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
+details summary{
+  cursor:pointer;list-style:none;user-select:none;
+  font:500 10px/1 var(--mono);letter-spacing:.24em;
+  color:var(--gold);text-transform:uppercase;
+  display:flex;justify-content:space-between;align-items:center;
+}
+details summary::-webkit-details-marker{display:none}
+details summary::after{
+  content:'+';font-weight:400;color:var(--muted);
+}
+details[open] summary::after{content:'−'}
+.lily-source{
+  white-space:pre-wrap;background:#080808;color:#cfcabd;
+  padding:14px;margin-top:12px;border:1px solid var(--line);
+  font:400 11px/1.6 var(--mono);overflow:auto;max-height:280px;
+}
+.lily-actions{display:flex;gap:8px;margin-top:10px}
+.lily-actions .btn{flex:1}
+
+/* ── FOOTER ────────────────────────────────────────────────── */
+.bem-footer{
+  border:1px solid var(--line);border-top:0;
+  padding:18px 24px;margin-top:22px;
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;
+  align-items:center;
+}
+.footer-brand{display:flex;align-items:baseline;gap:14px}
+.footer-brand .lg{font:600 18px/1 var(--mono);letter-spacing:.02em;color:var(--cream)}
+.footer-brand .lg em{color:var(--gold);font-style:normal;font-weight:400}
+.footer-brand .sm{
+  font:400 9px/1.4 var(--mono);letter-spacing:.24em;
+  color:var(--muted);text-transform:uppercase;
+}
+.footer-wave{
+  display:flex;align-items:center;justify-content:center;
+  color:var(--gold);opacity:.85;
+}
+.footer-tag{
+  text-align:right;font:400 10px/1 var(--mono);
+  letter-spacing:.3em;color:var(--muted);text-transform:uppercase;
+}
+.footer-tag .sep{color:var(--gold-dim);margin:0 8px}
+
+/* ── RESPONSIVE ────────────────────────────────────────────── */
+@media (max-width: 1040px){
+  .bem-header{grid-template-columns:1fr}
+  .bem-header > section{border-right:0;border-bottom:1px solid var(--line)}
+  .bem-header > section:last-child{border-bottom:0}
+  .principles-row{grid-template-columns:repeat(3,1fr)}
+  .grid{grid-template-columns:1fr}
+  .panel.left{border-right:0;border-bottom:1px solid var(--line)}
+  .bem-footer{grid-template-columns:1fr;text-align:center;gap:12px}
+  .footer-tag{text-align:center}
+}
+@media (max-width: 640px){
+  .wrap{padding:16px}
+  .principles-row{grid-template-columns:1fr 1fr}
+  .ctrl-row{grid-template-columns:1fr}
+  .actions{grid-template-columns:1fr}
+  .btn.primary{grid-column:auto}
+}
 </style>
 </head>
 <body>
 <div class="wrap">
-<header><h1>B.E.M. <span>Ditado Melódico</span> V7</h1><div class="subtitle">Gerador pedagógico de melodias<br>por restrições auditivas</div></header>
 
-<div class="panel">
-  <div class="mode-switch">
-    <button class="mode-btn active" id="melodyMode">Ditado melódico</button>
-    <button class="mode-btn" id="slonimskyMode">Material Slonimsky</button>
-  </div>
+  <!-- ═══════════════════════ HEADER ═══════════════════════ -->
+  <header class="bem-header">
+    <section>
+      <div class="brand-row">
+        <svg class="mandala" viewBox="0 0 200 200" aria-hidden="true">
+          <circle class="ring" cx="100" cy="100" r="88"/>
+          <circle class="ring" cx="100" cy="100" r="66"/>
+          <circle class="ring" cx="100" cy="100" r="44"/>
+          <circle class="ring" cx="100" cy="100" r="22"/>
+          <circle class="dot" cx="100" cy="100" r="2.4"/>
+          <line class="radial" x1="12" y1="100" x2="188" y2="100"/>
+          <line class="radial" x1="100" y1="12" x2="100" y2="188"/>
+          <line class="radial" x1="38" y1="38" x2="162" y2="162" opacity=".4"/>
+          <line class="radial" x1="162" y1="38" x2="38" y2="162" opacity=".4"/>
+          <circle class="dot" cx="100" cy="34" r="1.6"/>
+          <circle class="dot" cx="100" cy="166" r="1.6"/>
+          <circle class="dot" cx="34" cy="100" r="1.6"/>
+          <circle class="dot" cx="166" cy="100" r="1.6"/>
+          <circle class="dot" cx="62" cy="62" r="1.4" opacity=".7"/>
+          <circle class="dot" cx="138" cy="62" r="1.4" opacity=".7"/>
+          <circle class="dot" cx="62" cy="138" r="1.4" opacity=".7"/>
+          <circle class="dot" cx="138" cy="138" r="1.4" opacity=".7"/>
+          <text class="num" x="100" y="10" text-anchor="middle">+12</text>
+          <text class="num" x="100" y="197" text-anchor="middle">−7</text>
+          <text class="num" x="4" y="103">−7</text>
+          <text class="num" x="188" y="103">+7</text>
+        </svg>
+        <div class="brand-text">
+          <div class="bem-logo">B<em>.</em>E<em>.</em>M</div>
+          <div class="bem-sublabel">Bloco de Estudos Musicais</div>
+          <div class="bem-tri">
+            <span>Percepção</span><span class="sep">·</span>
+            <span>Prática</span><span class="sep">·</span>
+            <span>Autonomia</span>
+          </div>
+        </div>
+      </div>
+    </section>
 
-  <div id="melodyPanel">
-    <div class="section-title">Construção do exercício</div>
-    <div class="grid">
-      <div><label>Tonalidade</label><select id="key"></select></div>
-      <div><label>Escala</label><select id="scale">
-        <option value="major">Maior / Jônio</option><option value="minor">Menor natural / Eólio</option>
-        <option value="harmonic">Menor harmônica</option><option value="melodic">Menor melódica</option>
-        <option value="pentMajor">Pentatônica maior</option><option value="pentMinor">Pentatônica menor</option>
-      </select></div>
-      <div><label>Compassos</label><select id="bars"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></div>
-      <div><label>Compasso</label><select id="meter"><option value="4">4/4</option><option value="3">3/4</option><option value="2">2/4</option></select></div>
-      <div><label>Notas por tempo</label><select id="density"><option value="1" selected>1 — básico</option><option value="2">2 — colcheias</option></select></div>
-      <div><label>Âmbito</label><select id="range"><option value="7">5ª</option><option value="12" selected>8ª</option><option value="16">10ª</option></select></div>
+    <section class="purpose">
+      <div class="section-label">Módulo · Ditado Melódico</div>
+      <p>
+        O motor gera uma melodia a partir de <strong>estrutura métrica</strong>,
+        <strong>ritmo</strong>, <strong>contorno</strong> e <strong>escala</strong>.
+        O mesmo objeto musical alimenta pauta, áudio, quiz e LilyPond — sem duplicação
+        entre as camadas.
+      </p>
+      <p>
+        <em>Objetivo:</em> treinar a representação auditiva da relação entre
+        altura e duração, com escrita contextual.
+      </p>
+    </section>
+
+    <section>
+      <div class="section-label">Estado atual</div>
+      <div class="pillars">
+        <div class="pillar"><span class="n">01</span><span class="v">Motor rítmico por grupos métricos</span></div>
+        <div class="pillar"><span class="n">02</span><span class="v">Síncope entre fronteiras</span></div>
+        <div class="pillar"><span class="n">03</span><span class="v">Grafia contextual de acidentes</span></div>
+        <div class="pillar"><span class="n">04</span><span class="v">Beaming por grupo + ties</span></div>
+        <div class="pillar"><span class="n">05</span><span class="v">Exportação LilyPond</span></div>
+      </div>
+    </section>
+  </header>
+
+  <!-- ═══════════════════════ PRINCIPLES ═══════════════════════ -->
+  <section class="principles">
+    <div class="section-label">Princípios do motor</div>
+    <div class="principles-row">
+      <div class="principle">
+        <h4>Estrutura antes do som</h4>
+        <p>Fórmula de compasso → grupos → subdivisão → padrão. O ritmo nasce da métrica, não de uma grade fixa.</p>
+      </div>
+      <div class="principle">
+        <h4>Um modelo, várias saídas</h4>
+        <p>Pauta, áudio, quiz e LilyPond leem o mesmo objeto musical. Nada é recalculado em paralelo.</p>
+      </div>
+      <div class="principle">
+        <h4>Síncope é estrutura</h4>
+        <p>Uma nota que cruza fronteira de grupo é dividida em células ligadas — não é uma duração atômica especial.</p>
+      </div>
+      <div class="principle">
+        <h4>Grafia contextual</h4>
+        <p>A mesma classe de altura muda de nome conforme a escala e a função. Bemol e sustenido não são sinônimos visuais.</p>
+      </div>
+      <div class="principle">
+        <h4>Áudio fiel à partitura</h4>
+        <p>Ligaduras fundem eventos sonoros. O que se ouve corresponde ao que está escrito, inclusive em fronteiras métricas.</p>
+      </div>
+      <div class="principle">
+        <h4>Exportação como prova</h4>
+        <p>O LilyPond gerado é o teste final: se compila e renderiza, a notação interna está consistente.</p>
+      </div>
     </div>
+  </section>
 
-    <div class="grid" style="margin-top:16px">
-      <div><label>Movimento</label><select id="motion">
-        <option value="step" selected>Predominantemente conjunto</option><option value="mixed">Misto</option><option value="leap">Saltos frequentes</option>
-      </select></div>
-      <div><label>Salto máximo</label><select id="maxLeap"><option value="2">2ª</option><option value="3" selected>3ª</option><option value="5">4ª/5ª</option><option value="7">5ª/6ª</option></select></div>
-      <div><label>Contorno</label><select id="contour"><option value="mixed" selected>Misto</option><option value="asc">Ascendente</option><option value="desc">Descendente</option><option value="arch">Arqueado</option><option value="wave">Ondulante</option></select></div>
-      <div><label>Nota inicial</label><select id="startDegree"></select></div>
-      <div><label>Nota final</label><select id="endDegree"></select></div>
-      <div><label>Foco</label><select id="focus">
-        <option value="scale" selected>Escala / graus</option><option value="tonic">Tônica e dominantes</option><option value="thirds">3ªs</option><option value="fourths">4ªs/5ªs</option><option value="chromatic">Cromatismo controlado</option><option value="slonimsky">Célula Slonimsky</option>
-      </select></div>
-    </div>
-
-    <div class="grid" style="margin-top:16px">
-      <div><label>Ritmo</label><select id="rhythm">
-        <option value="basic" selected>Básico — semínimas/mínimas</option><option value="eighth">Colcheias</option><option value="varied">Variado</option>
-      </select></div>
-      <div><label>Repetição auditiva</label><select id="replays"><option value="1">1 vez</option><option value="2" selected>2 vezes</option><option value="3">3 vezes</option></select></div>
-      <div><label>Dificuldade</label><select id="difficulty"><option value="1" selected>1 — reconhecimento</option><option value="2">2 — graus</option><option value="3">3 — saltos</option><option value="4">4 — cromático</option></select></div>
-    </div>
-    <div class="hint">A melodia é sorteada por candidatos e filtrada pelas regras acima. O objetivo não é aleatoriedade pura: é variedade dentro de um espaço musical controlado.</div>
-  </div>
-
-  <div id="slonimskyPanel" style="display:none">
-    <div class="section-title">Célula intervalar como material melódico</div>
-    <div class="grid">
-      <div><label>Padrão</label><input id="pattern" value="+2 +2 +1 -2 -2"></div>
-      <div><label>Transposição</label><input id="transpose" type="number" placeholder="automática"></div>
-      <div><label>Repetições</label><input id="reps" type="number" min="1" max="12" value="2"></div>
-      <div><label>Transformação</label><select id="transform"><option value="original">Original</option><option value="retrograde">Retrógrado</option><option value="inversion">Inversão</option><option value="retro-inv">Retrógrado-invertido</option></select></div>
-    </div>
-    <div class="hint">Neste modo, a célula Slonimsky é transformada em material para o ditado. O sistema preserva a lógica intervalar, mas a saída continua sendo tratada como exercício auditivo.</div>
-  </div>
-
-  <button class="generate" id="generate">GERAR NOVO DITADO</button>
-</div>
-
-<div class="panel">
-  <div class="section-title">Áudio</div>
+  <!-- ═══════════════════════ MAIN GRID ═══════════════════════ -->
   <div class="grid">
-    <div><label>Andamento</label><input id="bpm" type="number" value="70" min="30" max="220"></div>
-    <div><label>Âncora</label><div class="controls"><button class="btn" id="root">♪ Tônica</button><button class="btn red" id="stop">■ Parar</button></div></div>
-    <div><label>Execução</label><div class="toggle"><input id="countin" type="checkbox" checked><span>Count-in</span></div><div class="toggle"><input id="loop" type="checkbox"><span>Loop</span></div></div>
-  </div>
-  <div class="controls" style="margin-top:14px">
-    <button class="btn" id="play">▶ Ouvir ditado</button>
-    <button class="btn blue" id="reveal">Revelar resposta</button>
-    <button class="btn" id="new">↻ Novo ditado</button>
-  </div>
-</div>
 
-<div id="meta"></div>
-<div id="results"><div class="empty">Clique em GERAR NOVO DITADO</div></div>
-<footer>B.E.M. — Bloco de Estudos Musicais · Motor de geração melódica controlada</footer>
+    <!-- ─── CONTROLS ─── -->
+    <section class="panel left">
+      <div class="section-label">Parâmetros do exercício</div>
+
+      <div class="controls">
+        <div class="ctrl-row">
+          <div class="ctrl">
+            <div class="ctrl-label"><span class="idx">01</span>Modo</div>
+            <select id="dModeSelect" onchange="dSetMode(this.value)">
+              <option value="melody">Ditado melódico</option>
+              <option value="slonimsky">Material Slonimsky</option>
+            </select>
+          </div>
+          <div class="ctrl">
+            <div class="ctrl-label"><span class="idx">02</span>Tonalidade</div>
+            <select id="dKey"></select>
+          </div>
+        </div>
+
+        <div id="dMelodyPanel">
+          <div class="ctrl-row">
+            <div class="ctrl">
+              <div class="ctrl-label"><span class="idx">03</span>Escala</div>
+              <select id="dScale">
+                <option value="major">Maior</option>
+                <option value="minor">Menor natural</option>
+                <option value="harmonic">Menor harmônica</option>
+                <option value="melodic">Menor melódica</option>
+                <option value="pentMajor">Pentatônica maior</option>
+                <option value="pentMinor">Pentatônica menor</option>
+              </select>
+            </div>
+            <div class="ctrl">
+              <div class="ctrl-label"><span class="idx">04</span>Compasso</div>
+              <select id="dMeter">
+                <option>2/4</option><option>3/4</option>
+                <option selected>4/4</option>
+                <option>6/8</option><option>9/8</option><option>12/8</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="ctrl-row" style="margin-top:12px">
+            <div class="ctrl">
+              <div class="ctrl-label"><span class="idx">05</span>Compassos</div>
+              <input id="dBars" type="number" min="1" max="8" value="2">
+            </div>
+            <div class="ctrl">
+              <div class="ctrl-label"><span class="idx">06</span>Ritmo</div>
+              <select id="dRhythm">
+                <option value="basic">Básico</option>
+                <option value="eighth">Subdividido</option>
+                <option value="varied">Variado</option>
+                <option value="syncopated">Sincopado</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="ctrl-row" style="margin-top:12px">
+            <div class="ctrl">
+              <div class="ctrl-label"><span class="idx">07</span>Extensão</div>
+              <select id="dRange">
+                <option value="7">5ª</option>
+                <option value="12" selected>8ª</option>
+                <option value="16">10ª</option>
+              </select>
+            </div>
+            <div class="ctrl">
+              <div class="ctrl-label"><span class="idx">08</span>Salto máximo</div>
+              <select id="dMaxLeap">
+                <option value="5">4ª</option>
+                <option value="7" selected>5ª</option>
+                <option value="12">8ª</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="ctrl-row" style="margin-top:12px">
+            <div class="ctrl">
+              <div class="ctrl-label"><span class="idx">09</span>Movimento</div>
+              <select id="dMotion">
+                <option value="step">Graus conjuntos</option>
+                <option value="mixed" selected>Misto</option>
+                <option value="leap">Saltos</option>
+              </select>
+            </div>
+            <div class="ctrl">
+              <div class="ctrl-label"><span class="idx">10</span>Contorno</div>
+              <select id="dContour">
+                <option value="mixed">Misto</option>
+                <option value="asc">Ascendente</option>
+                <option value="desc">Descendente</option>
+                <option value="arch">Arco</option>
+                <option value="wave">Onda</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div id="dSlonPanel" class="hidden" style="margin-top:12px">
+          <div class="ctrl">
+            <div class="ctrl-label"><span class="idx">11</span>Padrão (semitons)</div>
+            <input id="dPattern" value="2 1 2 3">
+          </div>
+          <div class="ctrl-row" style="margin-top:12px">
+            <div class="ctrl">
+              <div class="ctrl-label"><span class="idx">12</span>Repetições</div>
+              <input id="dReps" type="number" min="1" max="8" value="2">
+            </div>
+            <div class="ctrl">
+              <div class="ctrl-label"><span class="idx">13</span>Transformação</div>
+              <select id="dTransform">
+                <option value="original">Original</option>
+                <option value="retrograde">Retrógrado</option>
+                <option value="inversion">Inversão</option>
+                <option value="retro-inv">Retrógrado-invertido</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="ctrl" style="margin-top:12px">
+          <div class="ctrl-label"><span class="idx">14</span>Andamento ♩ =</div>
+          <input id="dBpm" type="number" min="30" max="220" value="70">
+        </div>
+
+        <hr class="divider gold">
+
+        <div class="actions">
+          <button class="btn primary" onclick="dGenerate()">↻ Gerar</button>
+          <button class="btn" onclick="dPlay()">▶ Ouvir</button>
+          <button class="btn" onclick="dPlayRoot()">♪ Tônica</button>
+          <button class="btn" onclick="dReveal()" style="grid-column:1/-1">Revelar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── OUTPUT ─── -->
+    <section class="panel output">
+      <div>
+        <div class="out-label">
+          <span>Estrutura métrica</span>
+          <span class="meta" id="dMetric">—</span>
+        </div>
+        <div class="staff-box" id="dStaff"></div>
+      </div>
+
+      <div class="quiz" id="dQuizPanel">
+        <div class="out-label"><span>O que você ouviu?</span></div>
+        <div style="color:var(--muted);font-size:12px">Gere um exercício para começar.</div>
+      </div>
+
+      <details id="dLilyBox">
+        <summary>Fonte LilyPond</summary>
+        <pre class="lily-source" id="dLilySource"></pre>
+        <div class="lily-actions">
+          <button class="btn" onclick="dCopyLily()"><span id="dCopyLabel">⧉ Copiar .ly</span></button>
+          <button class="btn" onclick="dDownloadLily()">⇩ Baixar .ly</button>
+        </div>
+      </details>
+    </section>
+
+  </div>
+
+  <!-- ═══════════════════════ FOOTER ═══════════════════════ -->
+  <footer class="bem-footer">
+    <div class="footer-brand">
+      <div class="lg">B<em>.</em>E<em>.</em>M</div>
+      <div class="sm">Bloco de Estudos Musicais<br>Ditado Melódico · v2.3</div>
+    </div>
+    <div class="footer-wave">
+      <svg width="220" height="24" viewBox="0 0 220 24" aria-hidden="true">
+        <g stroke="currentColor" stroke-width="1" fill="none" stroke-linecap="round">
+          <line x1="6"  y1="12" x2="6"  y2="12"/>
+          <line x1="14" y1="9"  x2="14" y2="15"/>
+          <line x1="22" y1="6"  x2="22" y2="18"/>
+          <line x1="30" y1="4"  x2="30" y2="20"/>
+          <line x1="38" y1="7"  x2="38" y2="17"/>
+          <line x1="46" y1="10" x2="46" y2="14"/>
+          <line x1="54" y1="3"  x2="54" y2="21"/>
+          <line x1="62" y1="8"  x2="62" y2="16"/>
+          <line x1="70" y1="5"  x2="70" y2="19"/>
+          <line x1="78" y1="11" x2="78" y2="13"/>
+          <line x1="86" y1="2"  x2="86" y2="22"/>
+          <line x1="94" y1="7"  x2="94" y2="17"/>
+          <line x1="102" y1="10" x2="102" y2="14"/>
+          <line x1="110" y1="4"  x2="110" y2="20"/>
+          <line x1="118" y1="9"  x2="118" y2="15"/>
+          <line x1="126" y1="6"  x2="126" y2="18"/>
+          <line x1="134" y1="12" x2="134" y2="12"/>
+          <line x1="142" y1="5"  x2="142" y2="19"/>
+          <line x1="150" y1="10" x2="150" y2="14"/>
+          <line x1="158" y1="3"  x2="158" y2="21"/>
+          <line x1="166" y1="8"  x2="166" y2="16"/>
+          <line x1="174" y1="11" x2="174" y2="13"/>
+          <line x1="182" y1="6"  x2="182" y2="18"/>
+          <line x1="190" y1="9"  x2="190" y2="15"/>
+          <line x1="198" y1="4"  x2="198" y2="20"/>
+          <line x1="206" y1="10" x2="206" y2="14"/>
+          <line x1="214" y1="12" x2="214" y2="12"/>
+        </g>
+      </svg>
+    </div>
+    <div class="footer-tag">
+      Ouvir<span class="sep">·</span>Entender<span class="sep">·</span>Transformar
+    </div>
+  </footer>
+
 </div>
 
 <script>
-const NOTE=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
-const SCALES={
- major:[0,2,4,5,7,9,11], minor:[0,2,3,5,7,8,10], harmonic:[0,2,3,5,7,8,11],
- melodic:[0,2,3,5,7,9,11], pentMajor:[0,2,4,7,9], pentMinor:[0,3,5,7,10]
+// Camada mínima BEM para este arquivo standalone.
+window.BEM = {
+  pcOf(name){ const m={C:0,'C#':1,Db:1,D:2,'D#':3,Eb:3,E:4,F:5,'F#':6,Gb:6,G:7,'G#':8,Ab:8,A:9,'A#':10,Bb:10,B:11}; return m[name] ?? 0; },
+  splitSpelling(name){ return {base:name[0],acc:name.slice(1)}; },
+  nameAt(letterIdx, pc){
+    const letters=['C','D','E','F','G','A','B']; const natural={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+    const base=letters[((letterIdx%7)+7)%7], n=natural[base], d=((pc-n+6)%12)-6;
+    if(d===0)return base; if(d===1)return base+'♯'; if(d===-1)return base+'♭'; if(d===2)return base+'𝄪'; if(d===-2)return base+'𝄫';
+    return base+(d>0?'♯':'♭');
+  }
 };
-const DEG=['1','b2','2','b3','3','4','#4','5','b6','6','b7','7'];
-let audioCtx=null, nodes=[], loopTimer=null, current=null, mode='melody';
+let audioCtx=null;
+function initAudio(){ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); }
+function midiToFreq(m){return 440*Math.pow(2,(m-69)/12)}
+function playNote(freq,start,duration){const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.value=freq;g.gain.setValueAtTime(.0001,start);g.gain.exponentialRampToValueAtTime(.18,start+.015);g.gain.exponentialRampToValueAtTime(.0001,start+duration);o.connect(g).connect(audioCtx.destination);o.start(start);o.stop(start+duration+.02)}
+</script>
 
-const $=id=>document.getElementById(id);
-NOTE.forEach((n,i)=>$('key').add(new Option(n,i)));
-for(let i=0;i<12;i++){ $('startDegree').add(new Option(DEG[i],i)); $('endDegree').add(new Option(DEG[i],i)); }
-$('startDegree').value=0;$('endDegree').value=0;
+<script id="bem-module">
+// ── MÓDULO DITADO MELÓDICO v2.3 ──
+// (lógica idêntica à versão anterior — apenas o invólucro HTML/CSS mudou)
+(function(){
+  const SCALES={major:[0,2,4,5,7,9,11],minor:[0,2,3,5,7,8,10],harmonic:[0,2,3,5,7,8,11],melodic:[0,2,3,5,7,9,11],pentMajor:[0,2,4,7,9],pentMinor:[0,3,5,7,10]};
+  const DEG=['1','b2','2','b3','3','4','#4','5','b6','6','b7','7'];
+  const SCALE_LETTER_STEPS={major:[0,1,2,3,4,5,6],minor:[0,1,2,3,4,5,6],harmonic:[0,1,2,3,4,5,6],melodic:[0,1,2,3,4,5,6],pentMajor:[0,1,2,4,5],pentMinor:[0,2,3,4,6]};
+  const LETIDX={C:0,D:1,E:2,F:3,G:4,A:5,B:6};
+  const FALLBACK_LETTER=[0,0,1,2,2,3,3,4,4,5,6,6];
+  const TONICS=['C','C#','D','Eb','E','F','F#','G','G#','A','Bb','B'];
+  const $=id=>document.getElementById(id);
 
-function stop(){
- if(loopTimer)clearTimeout(loopTimer); loopTimer=null;
- nodes.forEach(n=>{try{n.stop();n.disconnect()}catch(e){}});
- nodes=[];
-}
-$('stop').onclick=stop;
+  const METER_STRUCT = {
+    '2/4': { groups:2, groupDur:1,   kind:'simple',   subdivisions:2, accents:[1,0] },
+    '3/4': { groups:3, groupDur:1,   kind:'simple',   subdivisions:2, accents:[1,0,0] },
+    '4/4': { groups:4, groupDur:1,   kind:'simple',   subdivisions:2, accents:[1,0,1,0] },
+    '6/8': { groups:2, groupDur:1.5, kind:'compound', subdivisions:3, accents:[1,0] },
+    '9/8': { groups:3, groupDur:1.5, kind:'compound', subdivisions:3, accents:[1,0,0] },
+    '12/8':{ groups:4, groupDur:1.5, kind:'compound', subdivisions:3, accents:[1,0,1,0] }
+  };
 
-function tone(freq,t,dur,type='triangle',vol=.22){
- const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.value=freq;
- g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
- o.connect(g).connect(audioCtx.destination);o.start(t);o.stop(t+dur+.05);nodes.push(o);
-}
-function ensureAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();}
-function midiFreq(m){return 440*Math.pow(2,(m-69)/12)}
+  const GROUP_OPTIONS = {
+    simple: {
+      basic:      [[1]],
+      eighth:     [[.5,.5]],
+      varied:     [[1], [.5,.5], [.25,.25,.5], [.5,.25,.25]],
+      syncopated: [[1], [.5,.5], [.75,.25], [.25,.75], [.25,.5,.25]]
+    },
+    compound: {
+      basic:      [[1.5]],
+      eighth:     [[.5,.5,.5]],
+      varied:     [[1.5], [.5,.5,.5], [1,.5], [.5,1], [.25,.5,.75], [.75,.5,.25]],
+      syncopated: [[1.5], [1,.5], [.5,1], [.25,.5,.75], [.75,.5,.25]]
+    }
+  };
 
-function play(notes){
- if(!notes)return;ensureAudio();stop();
- const bpm=Math.max(30,parseInt($('bpm').value)||70), beat=60/bpm, dur=beat/2;
- let t=audioCtx.currentTime+.1;
- if($('countin').checked){for(let i=0;i<4;i++)tone(i===0?880:440,t+i*beat,.08,'square',.12);t+=4*beat}
- notes.forEach((n,i)=>{tone(midiFreq(60+parseInt($('key').value)+n),t,dur*.88,'triangle',.23);t+=dur});
- if($('loop').checked){loopTimer=setTimeout(()=>play(notes),(t-audioCtx.currentTime+beat)*1000)}
-}
-$('play').onclick=()=>play(current?.notes);
-$('root').onclick=()=>{ensureAudio();stop();let r=60+parseInt($('key').value),t=audioCtx.currentTime+.1;tone(midiFreq(r),t,2.5,'sine',.35);tone(midiFreq(r+7),t,2.5,'sine',.16)};
+  const BAR_OVERRIDES = {
+    '4/4': {
+      syncopated: [
+        [.5,1,.5,1,1],
+        [.5,1.5,1,1],
+        [1,.5,1.5,1],
+        [1,1,.5,1.5]
+      ]
+    },
+    '6/8': {
+      syncopated: [
+        [.5,1.5,.5,.5],
+        [.5,.5,1.5,.5],
+        [.5,1,1,.5]
+      ]
+    },
+    '9/8': {
+      syncopated: [
+        [.5,1.5,.5,1.5,.5],
+        [.5,1,.5,.5,1.5,.5]
+      ]
+    },
+    '12/8': {
+      syncopated: [
+        [.5,1.5,.5,.5,1.5,.5,.5,.5],
+        [1.5,.5,.5,1,.5,.5,1.5]
+      ]
+    }
+  };
 
-function parsePattern(s){return s.trim().split(/[,\s]+/).map(Number).filter(x=>Number.isFinite(x)&&x!==0)}
-function degreeOf(offset){let x=((offset%12)+12)%12;return DEG[x]}
-function render(notes){
- return notes.map((n,i)=>`<span class="${i===0||i===notes.length-1?'pillar':'interp'}">${degreeOf(n)}</span>`).join('<span class="sep">–</span>')
-}
-function intervalText(notes){return notes.slice(1).map((n,i)=>{let d=n-notes[i];return d>=0?'+'+d:d}).join(' ')}
-function noteNames(notes){return notes.map(n=>NOTE[(parseInt($('key').value)+n+120)%12]).join(' – ')}
+  function almostEqual(a,b){ return Math.abs(a-b) < 1e-9; }
+  function validPattern(pattern, total){
+    return Array.isArray(pattern) && pattern.length > 0 &&
+      pattern.every(d => Number.isFinite(d) && d > 0) &&
+      almostEqual(pattern.reduce((a,b)=>a+b,0), total);
+  }
+  function rhythmPatternForBar(meter, motor) {
+    const S = METER_STRUCT[meter];
+    const total = S.groups * S.groupDur;
+    const ov = BAR_OVERRIDES[meter]?.[motor];
+    if (ov && Math.random() < 0.5) {
+      const candidate = ov[Math.floor(Math.random() * ov.length)].slice();
+      if (validPattern(candidate, total)) return candidate;
+    }
+    const opts = GROUP_OPTIONS[S.kind][motor] || GROUP_OPTIONS[S.kind].basic;
+    const out = [];
+    for(let g=0; g<S.groups; g++){
+      const valid = opts.filter(p => validPattern(p, S.groupDur));
+      const pick = valid[Math.floor(Math.random() * valid.length)];
+      out.push(...pick);
+    }
+    return out;
+  }
+  function rhythmDurations(meter, motor, bars) {
+    return Array.from({ length: bars }, () => rhythmPatternForBar(meter, motor));
+  }
 
-function candidateSequence(){
- const key=parseInt($('key').value), scale=SCALES[$('scale').value], bars=parseInt($('bars').value), meter=parseInt($('meter').value), density=parseInt($('density').value);
- const len=bars*meter*density, start=parseInt($('startDegree').value), end=parseInt($('endDegree').value);
- const range=parseInt($('range').value), maxLeap=parseInt($('maxLeap').value), motion=$('motion').value, contour=$('contour').value, focus=$('focus').value;
- let seq=[nearestScaleOffset(start,scale)]; let direction=0;
- for(let i=1;i<len;i++){
-   let choices=[];
-   for(let k=0;k<scale.length;k++)for(let oct=-1;oct<=1;oct++){
-     let v=scale[k]+12*oct, d=v-seq[i-1];
-     if(d===0||Math.abs(d)>range||Math.abs(d)>maxLeap+1&&motion!=='leap')continue;
-     if(motion==='step'&&Math.abs(d)>4)continue;
-     if(motion==='leap'&&Math.abs(d)<3)continue;
-     if(focus==='thirds'&&Math.abs(d)!==3&&Math.abs(d)!==4)continue;
-     if(focus==='fourths'&&![5,7].includes(Math.abs(d)))continue;
-     if(focus==='tonic'&&i%3!==0){} 
-     if(contour==='asc'&&d<0)continue;if(contour==='desc'&&d>0)continue;
-     if(contour==='arch'&&i<len/2&&d<0)continue;if(contour==='arch'&&i>=len/2&&d>0)continue;
-     if(contour==='wave'&&direction!==0&&Math.sign(d)===direction){} 
-     choices.push(v);
-   }
-   if(!choices.length) return null;
-   let pick=choices[Math.floor(Math.random()*choices.length)];
-   direction=Math.sign(pick-seq[i-1]);seq.push(pick);
- }
- const finalTarget=nearestScaleOffset(end,scale);
- const diff=finalTarget-seq[seq.length-1];
- if(Math.abs(diff)>maxLeap+1)return null;
- seq[seq.length-1]=finalTarget;
- if(Math.max(...seq)-Math.min(...seq)>range)return null;
- if(Math.abs(diff)>maxLeap+1)return null;
- return seq;
-}
-function nearestScaleOffset(deg,scale){
- let best=scale[0],dist=999;
- for(let oct=-1;oct<=1;oct++)for(const v of scale.map(x=>x+12*oct)){let d=Math.abs(v-scale[deg%scale.length]);if(d<dist){dist=d;best=v}}
- return best;
-}
+  function splitDurationsAtGroupBoundaries(durs, meter) {
+    const S = METER_STRUCT[meter];
+    const groupDur = S.groupDur;
+    const totalDur = S.groups * groupDur;
+    const EPS = 1e-9;
+    const groups = Array.from({length:S.groups}, () => []);
+    let t = 0;
 
-function slonimskySequence(){
- const p=parsePattern($('pattern').value);if(!p.length)return null;
- const reps=Math.max(1,parseInt($('reps').value)||1), step=$('transpose').value===''?p.reduce((a,b)=>a+b,0):parseInt($('transpose').value);
- let a=[0];
- for(let r=0;r<reps;r++){let cur=r*step+p.reduce((x,y)=>x+y,0)*0;for(const d of p){cur+=d;a.push(cur)}}
- const tr=$('transform').value;if(tr==='retrograde')a.reverse();
- if(tr==='inversion')a=a.map(x=>-x);
- if(tr==='retro-inv')a=a.map(x=>-x).reverse();
- return a;
-}
+    durs.forEach((dur, attackIndex) => {
+      const start = t;
+      const end = Math.min(totalDur, t + dur);
+      let cursor = start;
+      while(cursor < end - EPS){
+        const group = Math.min(S.groups - 1, Math.floor((cursor + EPS) / groupDur));
+        const groupStart = group * groupDur;
+        const groupEnd = Math.min(totalDur, (group + 1) * groupDur);
+        const cellEnd = Math.min(end, groupEnd);
+        groups[group].push({
+          offset: cursor - groupStart,
+          dur: cellEnd - cursor,
+          isRest:false,
+          tieIn: cursor > start + EPS,
+          tieOut: cellEnd < end - EPS,
+          group,
+          attackIndex
+        });
+        cursor = cellEnd;
+      }
+      t = end;
+    });
+    const generated = groups.reduce((sum,g)=>sum+g.reduce((a,c)=>a+c.dur,0),0);
+    if(!almostEqual(generated,totalDur)){
+      throw new Error(`Ritmo inválido em ${meter}: ${generated} ≠ ${totalDur}`);
+    }
+    return groups;
+  }
 
-function validSlonimsky(a){
- if(!a||a.length<2)return null;
- const max=parseInt($('range').value);
- if(Math.max(...a)-Math.min(...a)>max*2)return null;
- return a;
-}
+  function metricGroupsForBar(meter){
+    const S = METER_STRUCT[meter];
+    return Array.from({length:S.groups}, (_,g)=>({
+      index:g, start:g*S.groupDur, duration:S.groupDur, accent:S.accents[g]
+    }));
+  }
 
-function generate(){
- stop();
- let notes=null,tries=0;
- if(mode==='slonimsky'){
-   while(!notes&&tries++<200)notes=validSlonimsky(slonimskySequence());
- }else{
-   while(!notes&&tries++<500)notes=candidateSequence();
- }
- if(!notes){$('results').innerHTML='<div class="empty">Não foi possível satisfazer todas as restrições. Afrouxe um parâmetro.</div>';return}
- current={notes};
- renderQuiz();
-}
-function distractors(correct){
- const out=[correct.join(',')], max=correct.length;
- for(let z=0;z<100&&out.length<4;z++){
-   let f=correct.slice();
-   const pos=1+Math.floor(Math.random()*Math.max(1,max-2));
-   f[pos]+=Math.random()<.5?1:-1;
-   if(Math.random()<.35)f=f.map(x=>-x);
-   const s=f.join(',');if(!out.includes(s))out.push(s);
- }
- return out;
-}
-function renderQuiz(){
- const n=current.notes, correct=n.join(','), opts=distractors(n).sort(()=>Math.random()-.5);
- $('meta').innerHTML=`<div class="meta"><span class="badge">${$('key').selectedOptions[0].text}</span><span class="badge">${$('bars').value} compasso(s)</span><span class="badge">graus relativos</span></div>`;
- $('results').innerHTML=`
- <div class="result">
-   <div class="result-head"><div><div class="idx">DITADO #1</div><div class="form-label" style="margin-top:7px">O que você ouviu?</div></div></div>
-   <div class="controls" style="margin:10px 0 14px"><button class="btn" id="qplay">▶ Ouvir</button><button class="btn" id="qroot">♪ Tônica</button></div>
-   <div id="opts">${opts.map(o=>`<button class="quiz-option" data-value="${o}">${o.split(',').map(x=>degreeOf(parseInt(x))).join(' – ')}</button>`).join('')}</div>
-   <div class="answer-box" id="answer" style="display:none">
-     <div class="form-label">Resposta / análise</div>
-     <div class="note-line">${render(n)}</div>
-     <div style="font-size:11px;color:#7c7969;margin-top:7px">Notas: ${noteNames(n)}</div>
-     <div style="font-size:11px;color:#7c7969;margin-top:4px">Intervalos: ${intervalText(n)}</div>
-     <div class="rhythm-box">♩ ♩ ♩ ♩ | ♩ ♩ ♩ ♩</div>
-   </div>
- </div>`;
- $('qplay').onclick=()=>play(n);$('qroot').onclick=()=>$('root').click();
- document.querySelectorAll('.quiz-option').forEach(b=>b.onclick=()=>{
-   document.querySelectorAll('.quiz-option').forEach(x=>x.disabled=true);
-   if(b.dataset.value===correct){b.classList.add('correct');}
-   else{b.classList.add('wrong');document.querySelectorAll('.quiz-option').forEach(x=>{if(x.dataset.value===correct)x.classList.add('correct')})}
-   $('answer').style.display='block';
- });
-}
-$('reveal').onclick=()=>{$('answer')?.style.setProperty('display','block');};
-$('generate').onclick=generate;$('new').onclick=generate;
-$('melodyMode').onclick=()=>{mode='melody';$('melodyMode').classList.add('active');$('slonimskyMode').classList.remove('active');$('melodyPanel').style.display='';$('slonimskyPanel').style.display='none'};
-$('slonimskyMode').onclick=()=>{mode='slonimsky';$('slonimskyMode').classList.add('active');$('melodyMode').classList.remove('active');$('melodyPanel').style.display='none';$('slonimskyPanel').style.display=''};
+  function spellNote(offsetFromTonic, tonicName, scaleType){
+    const scaleArr = SCALES[scaleType] || SCALES.major;
+    const steps    = SCALE_LETTER_STEPS[scaleType] || SCALE_LETTER_STEPS.major;
+    const tonicL   = LETIDX[tonicName[0]];
+    const tonicPc  = BEM.pcOf(tonicName);
+    const pcOffset = ((offsetFromTonic % 12) + 12) % 12;
+    const pcFromC  = ((tonicPc + offsetFromTonic) % 12 + 12) % 12;
+    const k = scaleArr.indexOf(pcOffset);
+    const letterIdx = k >= 0 ? tonicL + steps[k] : FALLBACK_LETTER[pcFromC];
+    return BEM.nameAt(letterIdx, pcFromC);
+  }
+  function accToLily(u){return u==='♯'?'is':u==='♭'?'es':u==='𝄪'?'isis':u==='𝄫'?'eses':''}
+  function accToVex(u){return u==='♯'?'#':u==='♭'?'b':u==='𝄪'?'##':u==='𝄫'?'bb':''}
+  function lilyNoteName(offset, tonic, scale, midi){
+    const name = spellNote(offset, tonic, scale);
+    const letter = name[0].toLowerCase(), acc = accToLily(name.slice(1));
+    const oct = Math.floor(midi/12) - 1, marks = oct - 3;
+    return letter + acc + (marks>0 ? "'".repeat(marks) : marks<0 ? ",".repeat(-marks) : '');
+  }
+  function lilyKeySpec(tonic, scaleType){
+    const {base, acc} = BEM.splitSpelling(tonic);
+    const lilyAcc = acc==='#'?'is':acc==='b'?'es':acc==='##'?'isis':acc==='bb'?'eses':'';
+    const mode = (scaleType==='minor'||scaleType==='harmonic'||scaleType==='melodic'||scaleType==='pentMinor') ? 'minor' : 'major';
+    return `\\key ${base}${lilyAcc} \\${mode}`;
+  }
+  function lilyDuration(b){return b===.25?'16':b===.5?'8':b===.75?'8.':b===1?'4':b===1.5?'4.':b===2?'2':b===3?'2.':b===4?'1':'4'}
+  function vfDuration(b){return b===.25?'16':b===.5?'8':b===.75?'8d':b===1?'q':b===1.5?'qd':b===2?'h':b===3?'hd':b===4?'w':'q'}
 
-generate();
+  function nearestScaleOffset(deg, scale){
+    let best = scale[0], dist = 999;
+    for(let oct=-1; oct<=1; oct++) for(const v of scale.map(x=>x+12*oct)){
+      const d = Math.abs(v - scale[deg % scale.length]);
+      if(d < dist){ dist = d; best = v; }
+    }
+    return best;
+  }
+  function scaleIndexOf(v, scale){
+    const oct = Math.floor(v / 12);
+    const pc = ((v % 12) + 12) % 12;
+    const k = scale.indexOf(pc);
+    if(k < 0) return null;
+    return oct * scale.length + k;
+  }
+  function candidateSequence(slotCount, scale, startDeg, endDeg, range, maxLeap, motion, contour){
+    let seq = [nearestScaleOffset(startDeg, scale)], direction = 0;
+    for(let i=1; i<slotCount; i++){
+      const choices = [];
+      const iPrev = scaleIndexOf(seq[i-1], scale);
+      for(let k=0; k<scale.length; k++) for(let oct=-1; oct<=1; oct++){
+        const v = scale[k] + 12*oct, d = v - seq[i-1];
+        if(d === 0 || Math.abs(d) > range) continue;
+        const iNew = scaleIndexOf(v, scale);
+        if(iPrev === null || iNew === null) continue;
+        const stepSize = Math.abs(iNew - iPrev);
+        if(motion === 'step' && stepSize > 1) continue;
+        if(motion === 'leap' && stepSize < 2) continue;
+        if(contour === 'asc'  && d < 0) continue;
+        if(contour === 'desc' && d > 0) continue;
+        if(contour === 'arch' && i < slotCount/2 && d < 0) continue;
+        if(contour === 'arch' && i >= slotCount/2 && d > 0) continue;
+        if(contour === 'wave' && direction !== 0 && Math.sign(d) === direction) continue;
+        if(Math.abs(d) > maxLeap) continue;
+        choices.push(v);
+      }
+      if(!choices.length) return null;
+      const pick = choices[Math.floor(Math.random() * choices.length)];
+      direction = Math.sign(pick - seq[i-1]);
+      seq.push(pick);
+    }
+    const finalTarget = nearestScaleOffset(endDeg, scale), diff = finalTarget - seq[seq.length-1];
+    if(Math.abs(diff) > maxLeap) return null;
+    seq[seq.length-1] = finalTarget;
+    if(Math.max(...seq) - Math.min(...seq) > range) return null;
+    return seq;
+  }
+
+  function parsePattern(s){return s.trim().split(/[,\s]+/).map(Number).filter(x=>Number.isFinite(x) && x!==0)}
+  function slonimskySequence(targetCount){
+    const p = parsePattern($('dPattern').value); if(!p.length) return null;
+    const reps = Math.max(1, parseInt($('dReps').value) || 1);
+    const step = p.reduce((a,b) => a+b, 0);
+    let a = [0];
+    for(let r=0; r<reps; r++){
+      let cur = r*step;
+      for(const d of p){ cur += d; a.push(cur); }
+    }
+    const tr = $('dTransform').value;
+    if(tr === 'retrograde') a.reverse();
+    if(tr === 'inversion')  a = a.map(x => -x);
+    if(tr === 'retro-inv')  a = a.map(x => -x).reverse();
+    if(Number.isFinite(targetCount) && targetCount > 0){
+      if(a.length > targetCount) a = a.slice(0, targetCount);
+      else if(a.length < targetCount){
+        const base = a.slice(); let i = 0;
+        while(a.length < targetCount) a.push(base[i++ % base.length]);
+      }
+    }
+    return a;
+  }
+
+  function tonicPc(){ return BEM.pcOf(TONICS[Number($('dKey').value) || 0]); }
+
+  function buildModel(notes, patterns){
+    const tonicName = TONICS[Number($('dKey').value) || 0];
+    const scaleType = $('dScale').value;
+    const meter = $('dMeter').value;
+    const motor = $('dRhythm').value;
+    const bars  = Math.max(1, Number($('dBars').value) || 1);
+    const S = METER_STRUCT[meter];
+    if(!Array.isArray(patterns) || patterns.length !== bars){
+      throw new Error('Padrões rítmicos ausentes ou incompatíveis com o número de compassos.');
+    }
+    const eventsPerBar = [];
+    let noteIndex = 0;
+    for(let b=0; b<bars; b++){
+      const durs = patterns[b];
+      const groups = splitDurationsAtGroupBoundaries(durs, meter);
+      const cells = [];
+      groups.forEach(groupCells => groupCells.forEach(c => {
+        const pitch = notes[noteIndex + c.attackIndex];
+        cells.push({
+          ...c,
+          offset: pitch !== undefined ? pitch : 0,
+          bar:b+1,
+          accent:S.accents[c.group] || 0
+        });
+      }));
+      noteIndex += durs.length;
+      cells.sort((a,b)=>a.group-b.group || a.offset-b.offset);
+      eventsPerBar.push(cells);
+    }
+    if(noteIndex !== notes.length){
+      throw new Error(`Modelo rítmico/melódico desalinhado: ${noteIndex} ataques para ${notes.length} notas.`);
+    }
+    return {
+      tonicName, scaleType, meter, motor, bars, S,
+      metricGroups: metricGroupsForBar(meter),
+      eventsPerBar
+    };
+  }
+
+  let dMode = 'melody', dCurrent = null, dLoopTimer = null, dRevealed = false;
+
+  function dSetMode(m){
+    dMode = m;
+    $('dMelodyPanel').style.display = m === 'melody'    ? 'block' : 'none';
+    $('dSlonPanel').style.display   = m === 'slonimsky' ? 'block' : 'none';
+  }
+  window.dSetMode = dSetMode;
+
+  function dGenerate(){
+    if(dLoopTimer){ clearTimeout(dLoopTimer); dLoopTimer = null; }
+    dRevealed = false;
+    let notes = null, tries = 0;
+    const meter = $('dMeter').value;
+    const motor = $('dRhythm').value;
+    const bars = Math.max(1, Number($('dBars').value) || 1);
+    const patterns = rhythmDurations(meter, motor, bars);
+    const slotCount = patterns.reduce((n,d) => n + d.length, 0);
+
+    if(dMode === 'slonimsky'){
+      while(!notes && tries++ < 200) notes = slonimskySequence(slotCount);
+    } else {
+      const scale = SCALES[$('dScale').value];
+      const range = Number($('dRange').value), maxLeap = Number($('dMaxLeap').value);
+      const motion = $('dMotion').value, contour = $('dContour').value;
+      while(!notes && tries++ < 500) notes = candidateSequence(slotCount, scale, 0, 0, range, maxLeap, motion, contour);
+    }
+    if(!notes){
+      $('dQuizPanel').innerHTML = '<div class="out-label"><span>O que você ouviu?</span></div><div style="color:var(--muted);font-size:12px">Não foi possível gerar — afrouxe um parâmetro.</div>';
+      return;
+    }
+    dCurrent = { notes, model: buildModel(notes, patterns) };
+    const mg = dCurrent.model.metricGroups.map(g => (g.duration === 1 ? '♩' : '♩.')).join(' + ');
+    $('dMetric').textContent = dCurrent.model.meter + ' — ' + mg;
+    dRenderStaff();
+    dRenderQuiz();
+  }
+  window.dGenerate = dGenerate;
+
+  function groupFraction(kind){
+    return kind === 'compound'
+      ? new Vex.Flow.Fraction(3, 8)
+      : new Vex.Flow.Fraction(1, 4);
+  }
+
+  function dRenderStaff(){
+    const host = $('dStaff'); host.innerHTML = '';
+    const model = dCurrent.model;
+    try{
+      const VF = Vex.Flow;
+      const mp = model.meter.split('/').map(Number);
+      const perBarW = 320, w = model.bars * perBarW + 30, h = 190;
+      const renderer = new VF.Renderer(host, VF.Renderer.Backends.SVG);
+      renderer.resize(w, h);
+      const ctx = renderer.getContext();
+
+      model.eventsPerBar.forEach((cells, bi) => {
+        const x = 15 + bi * perBarW;
+        const stave = new VF.Stave(x, 55, perBarW - 12);
+        if(bi === 0) stave.addClef('treble').addTimeSignature(model.meter);
+        stave.setContext(ctx).draw();
+
+        const tickables = [];
+        const ties = [];
+        let pendingTie = null;
+
+        for(const c of cells){
+          if(c.isRest){
+            const n = new VF.StaveNote({ keys:['b/4'], duration: vfDuration(c.dur) + 'r', clef:'treble' });
+            tickables.push(n);
+            pendingTie = null;
+            continue;
+          }
+          const name = spellNote(c.offset, model.tonicName, model.scale);
+          const { base, acc } = BEM.splitSpelling(name);
+          const vexAcc = accToVex(acc);
+          const oct = Math.floor((60 + tonicPc() + c.offset) / 12) - 1;
+          const n = new VF.StaveNote({
+            keys: [ base.toLowerCase() + vexAcc + '/' + oct ],
+            duration: vfDuration(c.dur),
+            clef: 'treble'
+          });
+          if(vexAcc) n.addModifier(new VF.Accidental(vexAcc), 0);
+          tickables.push(n);
+          if(c.tieIn && pendingTie){
+            ties.push({ first: pendingTie, last: n });
+          }
+          pendingTie = c.tieOut ? n : null;
+        }
+
+        const voice = new VF.Voice({ num_beats: mp[0], beat_value: mp[1] }).setStrict(false);
+        voice.addTickables(tickables);
+        new VF.Formatter().joinVoices([voice]).format([voice], perBarW - 100);
+
+        const beamGroups = Array.from(
+          { length: model.S.groups },
+          () => groupFraction(model.S.kind)
+        );
+        let beams = [];
+        try {
+          beams = VF.Beam.generateBeams(tickables, {
+            groups: beamGroups,
+            beamRests: false,
+            maintainStemDirections: false
+          });
+        } catch(e) { console.warn('B.E.M. — beaming:', e); }
+
+        voice.draw(ctx, stave);
+        beams.forEach(b => { try { b.setContext(ctx).draw(); } catch(e){} });
+
+        ties.forEach(t => {
+          try{
+            new VF.StaveTie({
+              first_note: t.first, last_note: t.last,
+              first_indices: [0], last_indices: [0]
+            }).setContext(ctx).draw();
+          }catch(e){}
+        });
+      });
+    }catch(err){
+      console.error('Ditado — erro de notação:', err);
+      host.innerHTML = '<div style="padding:20px;color:var(--muted);font-family:var(--mono);font-size:11px">Não foi possível desenhar a pauta.</div>';
+    }
+  }
+
+  function dToLily(){
+    if(!dCurrent || !dCurrent.model) return '';
+    const model = dCurrent.model;
+    let body = '';
+    model.eventsPerBar.forEach(cells => {
+      cells.forEach(c => {
+        if(c.isRest){ body += lilyDuration(c.dur) + 'r '; return; }
+        const n = lilyNoteName(c.offset, model.tonicName, model.scale, 60 + tonicPc() + c.offset);
+        body += n + lilyDuration(c.dur) + (c.tieOut ? '~ ' : ' ');
+      });
+      body += '| ';
+    });
+    return `\\version "2.24.0"\n\\header { title = "B.E.M. Ditado Melódico" }\n\\score {\n  { ${lilyKeySpec(model.tonicName, model.scale)} \\time ${model.meter} ${body.trim()} }\n  \\layout { }\n  \\midi { \\tempo 4 = ${Math.max(30, parseInt($('dBpm').value) || 70)} }\n}`;
+  }
+  window.dShowLily    = () => { $('dLilyBox').open = true; $('dLilySource').textContent = dToLily(); };
+  window.dCopyLily    = async () => { await navigator.clipboard.writeText(dToLily()); $('dCopyLabel').textContent = '✓ Copiado'; setTimeout(()=>$('dCopyLabel').textContent='⧉ Copiar .ly',1200); };
+  window.dDownloadLily= () => { const blob = new Blob([dToLily()],{type:'text/plain;charset=utf-8'}), a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'bem-ditado.ly'; a.click(); URL.revokeObjectURL(a.href); };
+
+  function flattenEvents(){
+    const out = [];
+    dCurrent.model.eventsPerBar.forEach(cells => cells.forEach(c => {
+      if(c.isRest) return;
+      if(c.tieIn && out.length){
+        out[out.length - 1].dur += c.dur;
+        return;
+      }
+      out.push({ offset:c.offset, dur:c.dur, bar:c.bar });
+    }));
+    return out;
+  }
+
+  function dPlay(){
+    if(!dCurrent) return;
+    initAudio();
+    const bpm = Math.max(30, parseInt($('dBpm').value) || 70), beat = 60 / bpm;
+    let t = audioCtx.currentTime + .1;
+    const base = 60 + tonicPc();
+    flattenEvents().forEach(e => {
+      playNote(midiToFreq(base + e.offset), t, Math.max(.12, beat * e.dur * .85));
+      t += beat * e.dur;
+    });
+  }
+  window.dPlay     = dPlay;
+  window.dPlayRoot = () => { initAudio(); playNote(midiToFreq(60 + tonicPc()), audioCtx.currentTime, 1.5); };
+  window.dReveal   = () => { if(!dCurrent) return; dRevealed = true; dRenderQuiz(true); };
+
+  function degreeOf(offset){ return DEG[((offset % 12) + 12) % 12]; }
+  function rhythmSymbol(dur){
+    return dur===.25?'𝅘𝅥𝅯':dur===.5?'♪':dur===.75?'♪.':dur===1?'♩':dur===1.5?'♩.':dur===2?'𝅗𝅥':dur===3?'𝅗𝅥.':dur===4?'𝅝':String(dur);
+  }
+  function distractors(correct){
+    const out = [correct.join(',')];
+    for(let z=0; z<100 && out.length<4; z++){
+      let f = correct.slice();
+      const pos = 1 + Math.floor(Math.random() * Math.max(1, correct.length - 2));
+      f[pos] += Math.random() < .5 ? 1 : -1;
+      const s = f.join(',');
+      if(!out.includes(s)) out.push(s);
+    }
+    return out;
+  }
+  function dRenderQuiz(forceReveal){
+    const n = dCurrent.notes, correct = n.join(',');
+    const opts = distractors(n).sort(() => Math.random() - .5);
+    const answerBlock = `<div class="answer-block" style="${dRevealed || forceReveal ? '' : 'display:none'}" id="dAnswerBlock">
+      <div class="out-label"><span>Resposta</span></div>
+      <div class="answer-degrees">${n.map(x => '<span class="d">'+degreeOf(x)+'</span>').join(' – ')}</div>
+      <div class="chips">${flattenEvents().map(e => `<span class="chip">${rhythmSymbol(e.dur)}</span>`).join('')}</div>
+    </div>`;
+    $('dQuizPanel').innerHTML = `
+      <div class="out-label"><span>O que você ouviu?</span></div>
+      <div id="dOpts">${opts.map(o => `<button class="quiz-option" data-value="${o}">${o.split(',').map(x => degreeOf(parseInt(x))).join(' – ')}</button>`).join('')}</div>
+      ${answerBlock}`;
+    document.querySelectorAll('#dOpts .quiz-option').forEach(b => b.onclick = () => {
+      document.querySelectorAll('#dOpts .quiz-option').forEach(x => x.disabled = true);
+      if(b.dataset.value === correct) b.classList.add('correct');
+      else {
+        b.classList.add('wrong');
+        document.querySelectorAll('#dOpts .quiz-option').forEach(x => { if(x.dataset.value === correct) x.classList.add('correct'); });
+      }
+      $('dAnswerBlock').style.display = 'block';
+    });
+  }
+
+  function dInit(){
+    TONICS.forEach((n, i) => $('dKey').add(new Option(n, i)));
+    dGenerate();
+  }
+  window.dInit = dInit;
+
+  dInit();
+})();
 </script>
 </body>
 </html>
