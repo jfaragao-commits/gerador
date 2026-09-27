@@ -2,280 +2,291 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>B.E.M. — Ditado Melódico v2.4</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0C0C0C">
+<title>B.E.M. — Ditado Melódico</title>
 <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:        #0C0C0C;
-  --panel:     #131313;
-  --panel-2:   #191919;
-  --line:      #262626;
-  --line-gold: rgba(200,160,48,.32);
-  --cream:     #E4E0D8;
-  --gold:      #C8A030;
-  --gold-dim:  #8a6f24;
-  --green:     #A4A96A;
-  --red:       #B84848;
-  --muted:     #7a756a;
-  --muted-2:   #4a4640;
-  --paper:     #F2EDDF;
-  --mono:      'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  --bg:#0C0C0C; --panel:#131313; --panel-2:#191919;
+  --line:#262626; --line-gold:rgba(200,160,48,.32);
+  --cream:#E4E0D8; --gold:#C8A030; --gold-dim:#8a6f24;
+  --green:#A4A96A; --red:#B84848;
+  --muted:#7a756a; --muted-2:#4a4640;
+  --paper:#F2EDDF;
+  --mono:'IBM Plex Mono', ui-monospace, Menlo, monospace;
 }
-*{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--cream);font-family:var(--mono);font-size:13px;line-height:1.45;-webkit-font-smoothing:antialiased}
-a{color:var(--gold);text-decoration:none}
-.wrap{max-width:1280px;margin:0 auto;padding:24px 28px 60px}
-.bem-header{display:grid;grid-template-columns:1.1fr 1.4fr 1fr;gap:0;border:1px solid var(--line);margin-bottom:0}
-.bem-header > section{padding:22px 24px;border-right:1px solid var(--line)}
-.bem-header > section:last-child{border-right:0}
-.brand-row{display:flex;align-items:flex-start;gap:18px}
-.mandala{width:96px;height:96px;flex:0 0 96px;color:var(--gold);opacity:.85;margin-top:2px}
-.mandala .ring{fill:none;stroke:currentColor;stroke-width:.6}
-.mandala .radial{stroke:currentColor;stroke-width:.6;opacity:.7}
-.mandala .dot{fill:currentColor}
-.mandala .num{fill:currentColor;font-family:var(--mono);font-size:7px;opacity:.8}
-.bem-logo{font:700 44px/1 var(--mono);letter-spacing:.02em;color:var(--cream);margin:0 0 6px}
-.bem-logo em{font-style:normal;color:var(--gold);font-weight:400}
-.bem-sublabel{font:500 10px/1.4 var(--mono);letter-spacing:.28em;color:var(--muted);text-transform:uppercase;margin-bottom:12px}
-.bem-tri{font:400 9.5px/1 var(--mono);letter-spacing:.24em;color:var(--muted-2);text-transform:uppercase;display:flex;gap:10px}
-.bem-tri .sep{color:var(--gold-dim)}
-.section-label{font:500 10px/1 var(--mono);letter-spacing:.24em;color:var(--gold);text-transform:uppercase;margin-bottom:12px}
-.purpose p{margin:0 0 10px;font:400 12px/1.65 var(--mono);color:var(--cream)}
-.purpose strong{color:var(--gold);font-weight:500;font-style:normal}
-.purpose em{color:var(--cream);font-style:normal;opacity:.75}
-.pillars{display:grid;grid-template-columns:1fr;gap:6px}
-.pillar{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:baseline;font:400 11px/1.4 var(--mono);color:var(--cream);padding:3px 0;border-bottom:1px dotted var(--line)}
-.pillar:last-child{border-bottom:0}
-.pillar .n{color:var(--gold);font-weight:500}
-.pillar .v{color:var(--cream)}
-.principles{border:1px solid var(--line);border-top:0;padding:18px 24px;margin-bottom:22px}
-.principles .section-label{margin-bottom:14px}
-.principles-row{display:grid;grid-template-columns:repeat(6,1fr);gap:18px}
-.principle{border-left:1px solid var(--line-gold);padding-left:12px}
-.principle h4{font:600 10px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--cream);margin:0 0 8px}
-.principle p{margin:0;font:400 10.5px/1.55 var(--mono);color:var(--muted)}
-.grid{display:grid;grid-template-columns:340px 1fr;gap:0;border:1px solid var(--line)}
-.panel{background:var(--panel);padding:20px 22px}
-.panel.left{border-right:1px solid var(--line)}
-.panel + .panel{border-top:0}
-.controls{display:grid;gap:12px}
-.ctrl-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.ctrl{display:grid;gap:5px}
-.ctrl-label{font:500 9.5px/1 var(--mono);letter-spacing:.2em;color:var(--gold);text-transform:uppercase}
-.ctrl-label .idx{color:var(--gold-dim);margin-right:6px}
-select,input{width:100%;background:#080808;color:var(--cream);border:1px solid var(--line);border-radius:0;padding:8px 10px;font:400 12px var(--mono);appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted-2) 50%),linear-gradient(135deg,var(--muted-2) 50%,transparent 50%);background-position:calc(100% - 14px) 50%, calc(100% - 9px) 50%;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
-input{background-image:none}
-select:focus,input:focus{outline:0;border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
-option{background:#080808;color:var(--cream)}
-.divider{border:0;border-top:1px solid var(--line);margin:12px 0}
-.divider.gold{border-top-color:var(--line-gold)}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
-.btn{border:1px solid var(--line);background:transparent;color:var(--cream);border-radius:0;padding:9px 12px;cursor:pointer;font:500 10.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;transition:border-color .12s,color .12s,background .12s}
-.btn:hover{border-color:var(--gold);color:var(--gold)}
-.btn.primary{grid-column:1 / -1;background:var(--gold);border-color:var(--gold);color:#0C0C0C;font-weight:600}
-.btn.primary:hover{background:#d8b040;border-color:#d8b040;color:#0C0C0C}
-.output{display:grid;gap:16px}
-.out-label{font:500 10px/1 var(--mono);letter-spacing:.24em;color:var(--gold);text-transform:uppercase;margin-bottom:10px;display:flex;justify-content:space-between;align-items:baseline}
-.out-label .meta{color:var(--muted-2);letter-spacing:.14em;font-weight:400}
-.staff-box{background:var(--paper);border:1px solid var(--line);padding:14px;min-height:220px;overflow:auto}
-.staff-box svg{display:block;margin:0 auto}
-.quiz{padding:16px 0 0;border-top:1px solid var(--line);margin-top:16px}
-.quiz-option{display:block;width:100%;text-align:left;background:#080808;border:1px solid var(--line);color:var(--cream);padding:11px 14px;margin:6px 0;font:400 13px var(--mono);letter-spacing:.08em;cursor:pointer;transition:border-color .12s,color .12s,background .12s}
-.quiz-option:hover{border-color:var(--gold);color:var(--gold)}
-.quiz-option.correct{border-color:var(--green);background:rgba(164,169,106,.10);color:var(--green)}
-.quiz-option.wrong{border-color:var(--red);background:rgba(184,72,72,.10);color:var(--red)}
-.answer-block{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
-.answer-block .out-label{margin-bottom:10px}
-.answer-degrees{font:500 15px/1.6 var(--mono);letter-spacing:.14em;color:var(--cream);margin-bottom:8px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{
+  margin:0;background:var(--bg);color:var(--cream);
+  font-family:var(--mono);font-size:14px;line-height:1.4;
+  -webkit-font-smoothing:antialiased;
+}
+body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.app{max-width:560px;margin:0 auto;padding:10px 10px 28px}
+
+.topbar{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px 14px;border:1px solid var(--line);
+  background:var(--panel);margin-bottom:8px;
+}
+.brand{font:600 17px/1 var(--mono);letter-spacing:.02em;color:var(--cream)}
+.brand em{font-style:normal;color:var(--gold);font-weight:400}
+.sub{font:400 9px/1 var(--mono);letter-spacing:.24em;color:var(--muted);text-transform:uppercase;margin-top:4px}
+.tag{font:400 9px/1 var(--mono);letter-spacing:.22em;color:var(--gold);text-transform:uppercase}
+
+.card{
+  border:1px solid var(--line);background:var(--panel);
+  padding:12px;margin-bottom:8px;
+}
+.card-title{
+  font:500 10px/1 var(--mono);letter-spacing:.22em;color:var(--gold);
+  text-transform:uppercase;margin-bottom:10px;
+  display:flex;justify-content:space-between;align-items:baseline;gap:8px;
+}
+.card-title .meta{
+  color:var(--muted-2);letter-spacing:.1em;font-weight:400;
+  text-transform:none;font-size:10px;text-align:right;
+}
+.card-title .meta.locked{
+  color:var(--gold);letter-spacing:.2em;
+  text-transform:uppercase;font-size:9px;
+}
+
+.ctrl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ctrl-grid .full{grid-column:1/-1}
+.ctrl{display:flex;flex-direction:column;gap:4px;min-width:0}
+.ctrl label{
+  font:500 9px/1 var(--mono);letter-spacing:.16em;color:var(--gold);
+  text-transform:uppercase;display:flex;gap:6px;align-items:center;
+}
+.ctrl label .idx{color:var(--gold-dim)}
+
+select,input{
+  width:100%;background:#080808;color:var(--cream);
+  border:1px solid var(--line);border-radius:0;
+  padding:10px 12px;font:400 13px var(--mono);appearance:none;
+  min-height:42px;
+}
+select{
+  background-image:
+    linear-gradient(45deg,transparent 50%,var(--muted-2) 50%),
+    linear-gradient(135deg,var(--muted-2) 50%,transparent 50%);
+  background-position:calc(100% - 14px) 50%, calc(100% - 9px) 50%;
+  background-size:5px 5px, 5px 5px;background-repeat:no-repeat;
+  padding-right:28px;
+}
+select:focus,input:focus{outline:0;border-color:var(--gold)}
+
+/* ── Parâmetros avançados (details) ── */
+details.advanced{
+  margin:14px 0 0;border:0;background:transparent;padding:0;
+}
+details.advanced > summary{
+  padding:10px 0 4px;
+  border-top:1px solid var(--line);
+  color:var(--muted);
+  font:500 9.5px/1 var(--mono);
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  display:flex;justify-content:space-between;align-items:center;
+  cursor:pointer;user-select:none;list-style:none;
+}
+details.advanced > summary::-webkit-details-marker{display:none}
+details.advanced > summary::after{
+  content:'▸';color:var(--muted);font-size:12px;
+  transition:transform .15s,color .15s;
+}
+details.advanced[open] > summary{color:var(--gold)}
+details.advanced[open] > summary::after{
+  transform:rotate(90deg);color:var(--gold);
+}
+details.advanced > .adv-body{
+  padding-top:12px;
+  animation:fade .18s ease;
+}
+@keyframes fade{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+details.advanced .ctrl-grid + .ctrl-grid{margin-top:8px}
+
+.range-badge{
+  font:400 9px/1 var(--mono);letter-spacing:.14em;
+  color:var(--gold-dim);text-transform:uppercase;
+  padding:8px 0 0;
+}
+
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btn{
+  border:1px solid var(--line);background:#080808;color:var(--cream);
+  padding:12px;cursor:pointer;font:500 11px/1 var(--mono);
+  letter-spacing:.12em;text-transform:uppercase;min-height:46px;
+  transition:border-color .12s,color .12s,background .12s;
+}
+.btn:active{border-color:var(--gold);color:var(--gold)}
+.btn.primary{
+  grid-column:1/-1;background:var(--gold);border-color:var(--gold);
+  color:#0C0C0C;font-weight:600;
+}
+.btn.primary:active{background:#d8b040;border-color:#d8b040;color:#0C0C0C}
+
+.staff-outer{position:relative}
+.staff-wrap{
+  background:var(--paper);border:1px solid var(--line);
+  padding:8px;overflow-x:auto;min-height:170px;
+  -webkit-overflow-scrolling:touch;
+  transition:filter .35s ease;
+}
+.staff-wrap svg{display:block}
+
+.staff-wrap.blurred{
+  filter: blur(11px) saturate(.7);
+  pointer-events:none;
+  user-select:none;
+}
+.staff-lock{
+  position:absolute;inset:0;
+  display:none;
+  align-items:center;justify-content:center;
+  pointer-events:none;
+  font:500 10px/1 var(--mono);
+  letter-spacing:.3em;
+  color:var(--gold);
+  text-transform:uppercase;
+  text-shadow:0 1px 0 rgba(0,0,0,.6);
+  background:radial-gradient(ellipse at center, rgba(12,12,12,.35) 0%, rgba(12,12,12,.15) 60%, transparent 85%);
+}
+.staff-wrap.blurred ~ .staff-lock{display:flex}
+
+.quiz-option{
+  display:block;width:100%;text-align:left;background:#080808;
+  border:1px solid var(--line);color:var(--cream);
+  padding:14px;margin:6px 0;font:400 14px var(--mono);
+  letter-spacing:.06em;cursor:pointer;min-height:46px;
+  transition:border-color .12s,color .12s,background .12s;
+}
+.quiz-option:active{border-color:var(--gold);color:var(--gold)}
+.quiz-option.correct{
+  border-color:var(--green);
+  background:rgba(164,169,106,.10);color:var(--green);
+}
+.quiz-option.wrong{
+  border-color:var(--red);
+  background:rgba(184,72,72,.10);color:var(--red);
+}
+
+.answer{
+  margin-top:12px;padding-top:12px;border-top:1px solid var(--line);
+}
+.answer-degrees{
+  font:500 15px/1.6 var(--mono);letter-spacing:.12em;
+  color:var(--cream);margin-bottom:8px;
+}
 .answer-degrees .d{color:var(--gold)}
-.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.chip{padding:3px 8px;border:1px solid var(--line);font:400 11px var(--mono);color:var(--gold);letter-spacing:.06em}
-details{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
-details summary{cursor:pointer;list-style:none;user-select:none;font:500 10px/1 var(--mono);letter-spacing:.24em;color:var(--gold);text-transform:uppercase;display:flex;justify-content:space-between;align-items:center}
-details summary::-webkit-details-marker{display:none}
-details summary::after{content:'+';font-weight:400;color:var(--muted)}
-details[open] summary::after{content:'−'}
-.lily-source{white-space:pre-wrap;background:#080808;color:#cfcabd;padding:14px;margin-top:12px;border:1px solid var(--line);font:400 11px/1.6 var(--mono);overflow:auto;max-height:280px}
-.lily-actions{display:flex;gap:8px;margin-top:10px}
-.lily-actions .btn{flex:1}
-.bem-footer{border:1px solid var(--line);border-top:0;padding:18px 24px;margin-top:22px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;align-items:center}
-.footer-brand{display:flex;align-items:baseline;gap:14px}
-.footer-brand .lg{font:600 18px/1 var(--mono);letter-spacing:.02em;color:var(--cream)}
-.footer-brand .lg em{color:var(--gold);font-style:normal;font-weight:400}
-.footer-brand .sm{font:400 9px/1.4 var(--mono);letter-spacing:.24em;color:var(--muted);text-transform:uppercase}
-.footer-wave{display:flex;align-items:center;justify-content:center;color:var(--gold);opacity:.85}
-.footer-tag{text-align:right;font:400 10px/1 var(--mono);letter-spacing:.3em;color:var(--muted);text-transform:uppercase}
-.footer-tag .sep{color:var(--gold-dim);margin:0 8px}
-@media (max-width: 1040px){
-  .bem-header{grid-template-columns:1fr}
-  .bem-header > section{border-right:0;border-bottom:1px solid var(--line)}
-  .bem-header > section:last-child{border-bottom:0}
-  .principles-row{grid-template-columns:repeat(3,1fr)}
-  .grid{grid-template-columns:1fr}
-  .panel.left{border-right:0;border-bottom:1px solid var(--line)}
-  .bem-footer{grid-template-columns:1fr;text-align:center;gap:12px}
-  .footer-tag{text-align:center}
+.chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.chip{
+  padding:3px 8px;border:1px solid var(--line);
+  font:400 11px var(--mono);color:var(--gold);
 }
-@media (max-width: 640px){
-  .wrap{padding:16px}
-  .principles-row{grid-template-columns:1fr 1fr}
-  .ctrl-row{grid-template-columns:1fr}
-  .actions{grid-template-columns:1fr}
-  .btn.primary{grid-column:auto}
+
+details.lily{border:1px solid var(--line);background:var(--panel);margin-bottom:8px}
+details.lily summary{
+  cursor:pointer;list-style:none;padding:13px 14px;user-select:none;
+  font:500 10px/1 var(--mono);letter-spacing:.22em;color:var(--gold);
+  text-transform:uppercase;display:flex;justify-content:space-between;
+  align-items:center;
+}
+details.lily summary::-webkit-details-marker{display:none}
+details.lily summary::after{content:'+';color:var(--muted);font-size:14px;font-weight:400}
+details.lily[open] summary::after{content:'−'}
+.lily-source{
+  white-space:pre-wrap;background:#080808;color:#cfcabd;
+  padding:12px;border-top:1px solid var(--line);margin:0;
+  font:400 10px/1.6 var(--mono);overflow:auto;max-height:240px;
+}
+.lily-actions{
+  display:grid;grid-template-columns:1fr 1fr;
+  border-top:1px solid var(--line);
+}
+.lily-actions .btn{
+  border:0;border-right:1px solid var(--line);min-height:42px;
+}
+.lily-actions .btn:last-child{border-right:0}
+
+.hint{color:var(--muted);font-size:11px;padding:4px 0}
+
+@media (max-width:360px){
+  .ctrl-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="app">
 
-  <header class="bem-header">
-    <section>
-      <div class="brand-row">
-        <svg class="mandala" viewBox="0 0 200 200" aria-hidden="true">
-          <circle class="ring" cx="100" cy="100" r="88"/>
-          <circle class="ring" cx="100" cy="100" r="66"/>
-          <circle class="ring" cx="100" cy="100" r="44"/>
-          <circle class="ring" cx="100" cy="100" r="22"/>
-          <circle class="dot" cx="100" cy="100" r="2.4"/>
-          <line class="radial" x1="12" y1="100" x2="188" y2="100"/>
-          <line class="radial" x1="100" y1="12" x2="100" y2="188"/>
-          <line class="radial" x1="38" y1="38" x2="162" y2="162" opacity=".4"/>
-          <line class="radial" x1="162" y1="38" x2="38" y2="162" opacity=".4"/>
-          <circle class="dot" cx="100" cy="34" r="1.6"/>
-          <circle class="dot" cx="100" cy="166" r="1.6"/>
-          <circle class="dot" cx="34" cy="100" r="1.6"/>
-          <circle class="dot" cx="166" cy="100" r="1.6"/>
-          <circle class="dot" cx="62" cy="62" r="1.4" opacity=".7"/>
-          <circle class="dot" cx="138" cy="62" r="1.4" opacity=".7"/>
-          <circle class="dot" cx="62" cy="138" r="1.4" opacity=".7"/>
-          <circle class="dot" cx="138" cy="138" r="1.4" opacity=".7"/>
-          <text class="num" x="100" y="10" text-anchor="middle">+12</text>
-          <text class="num" x="100" y="197" text-anchor="middle">−7</text>
-          <text class="num" x="4" y="103">−7</text>
-          <text class="num" x="188" y="103">+7</text>
-        </svg>
-        <div class="brand-text">
-          <div class="bem-logo">B<em>.</em>E<em>.</em>M</div>
-          <div class="bem-sublabel">Bloco de Estudos Musicais</div>
-          <div class="bem-tri">
-            <span>Percepção</span><span class="sep">·</span>
-            <span>Prática</span><span class="sep">·</span>
-            <span>Autonomia</span>
-          </div>
-        </div>
-      </div>
-    </section>
+  <div class="topbar">
+    <div>
+      <div class="brand">B<em>.</em>E<em>.</em>M</div>
+      <div class="sub">Ditado Melódico</div>
+    </div>
+    <div class="tag">v2.8</div>
+  </div>
 
-    <section class="purpose">
-      <div class="section-label">Módulo · Ditado Melódico</div>
-      <p>
-        O motor gera uma melodia a partir de <strong>estrutura métrica</strong>,
-        <strong>ritmo</strong>, <strong>contorno</strong> e <strong>escala</strong>.
-        O mesmo objeto musical alimenta pauta, áudio, quiz e LilyPond — sem duplicação
-        entre as camadas.
-      </p>
-      <p>
-        <em>Objetivo:</em> treinar a representação auditiva da relação entre
-        altura e duração, com escrita contextual.
-      </p>
-    </section>
+  <!-- ── Parâmetros ── -->
+  <div class="card">
+    <div class="card-title">
+      <span>Parâmetros</span>
+      <span class="meta">A2 – A5</span>
+    </div>
 
-    <section>
-      <div class="section-label">Estado atual</div>
-      <div class="pillars">
-        <div class="pillar"><span class="n">01</span><span class="v">Motor rítmico por grupos métricos</span></div>
-        <div class="pillar"><span class="n">02</span><span class="v">Síncope entre fronteiras</span></div>
-        <div class="pillar"><span class="n">03</span><span class="v">Grafia contextual de acidentes</span></div>
-        <div class="pillar"><span class="n">04</span><span class="v">Beaming por grupo + ties</span></div>
-        <div class="pillar"><span class="n">05</span><span class="v">Pontos de aumento + Foco intervalar</span></div>
+    <!-- Básicos: sempre visíveis -->
+    <div class="ctrl-grid">
+      <div class="ctrl">
+        <label><span class="idx">01</span>Modo</label>
+        <select id="dModeSelect" onchange="dSetMode(this.value)">
+          <option value="melody">Ditado melódico</option>
+          <option value="slonimsky">Slonimsky</option>
+        </select>
       </div>
-    </section>
-  </header>
-
-  <section class="principles">
-    <div class="section-label">Princípios do motor</div>
-    <div class="principles-row">
-      <div class="principle">
-        <h4>Estrutura antes do som</h4>
-        <p>Fórmula de compasso → grupos → subdivisão → padrão. O ritmo nasce da métrica, não de uma grade fixa.</p>
+      <div class="ctrl">
+        <label><span class="idx">02</span>Tonalidade</label>
+        <select id="dKey"></select>
       </div>
-      <div class="principle">
-        <h4>Um modelo, várias saídas</h4>
-        <p>Pauta, áudio, quiz e LilyPond leem o mesmo objeto musical. Nada é recalculado em paralelo.</p>
+      <div class="ctrl">
+        <label><span class="idx">03</span>Escala</label>
+        <select id="dScale">
+          <option value="major">Maior</option>
+          <option value="minor">Menor natural</option>
+          <option value="harmonic">Menor harmônica</option>
+          <option value="melodic">Menor melódica</option>
+          <option value="pentMajor">Pentatônica maior</option>
+          <option value="pentMinor">Pentatônica menor</option>
+        </select>
       </div>
-      <div class="principle">
-        <h4>Síncope é estrutura</h4>
-        <p>Uma nota que cruza fronteira de grupo é dividida em células ligadas — não é uma duração atômica especial.</p>
-      </div>
-      <div class="principle">
-        <h4>Grafia contextual</h4>
-        <p>A mesma classe de altura muda de nome conforme a escala e a função. Bemol e sustenido não são sinônimos visuais.</p>
-      </div>
-      <div class="principle">
-        <h4>Áudio fiel à partitura</h4>
-        <p>Ligaduras fundem eventos sonoros. O que se ouve corresponde ao que está escrito, inclusive em fronteiras métricas.</p>
-      </div>
-      <div class="principle">
-        <h4>Exportação como prova</h4>
-        <p>O LilyPond gerado é o teste final: se compila e renderiza, a notação interna está consistente.</p>
+      <div class="ctrl">
+        <label><span class="idx">04</span>Compasso</label>
+        <select id="dMeter">
+          <option>2/4</option><option>3/4</option>
+          <option selected>4/4</option>
+          <option>6/8</option><option>9/8</option><option>12/8</option>
+        </select>
       </div>
     </div>
-  </section>
 
-  <div class="grid">
+    <!-- Avançados: recolhidos por padrão -->
+    <details class="advanced" id="dAdvanced">
+      <summary>⚙ Parâmetros avançados</summary>
+      <div class="adv-body">
 
-    <section class="panel left">
-      <div class="section-label">Parâmetros do exercício</div>
-
-      <div class="controls">
-        <div class="ctrl-row">
-          <div class="ctrl">
-            <div class="ctrl-label"><span class="idx">01</span>Modo</div>
-            <select id="dModeSelect" onchange="dSetMode(this.value)">
-              <option value="melody">Ditado melódico</option>
-              <option value="slonimsky">Material Slonimsky</option>
-            </select>
-          </div>
-          <div class="ctrl">
-            <div class="ctrl-label"><span class="idx">02</span>Tonalidade</div>
-            <select id="dKey"></select>
-          </div>
-        </div>
-
+        <!-- Painel melódico -->
         <div id="dMelodyPanel">
-          <div class="ctrl-row">
+          <div class="ctrl-grid">
             <div class="ctrl">
-              <div class="ctrl-label"><span class="idx">03</span>Escala</div>
-              <select id="dScale">
-                <option value="major">Maior</option>
-                <option value="minor">Menor natural</option>
-                <option value="harmonic">Menor harmônica</option>
-                <option value="melodic">Menor melódica</option>
-                <option value="pentMajor">Pentatônica maior</option>
-                <option value="pentMinor">Pentatônica menor</option>
-              </select>
+              <label><span class="idx">05</span>Compassos</label>
+              <input id="dBars" type="number" inputmode="numeric" min="1" max="8" value="2">
             </div>
             <div class="ctrl">
-              <div class="ctrl-label"><span class="idx">04</span>Compasso</div>
-              <select id="dMeter">
-                <option>2/4</option><option>3/4</option>
-                <option selected>4/4</option>
-                <option>6/8</option><option>9/8</option><option>12/8</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="ctrl-row" style="margin-top:12px">
-            <div class="ctrl">
-              <div class="ctrl-label"><span class="idx">05</span>Compassos</div>
-              <input id="dBars" type="number" min="1" max="8" value="2">
-            </div>
-            <div class="ctrl">
-              <div class="ctrl-label"><span class="idx">06</span>Ritmo</div>
+              <label><span class="idx">06</span>Ritmo</label>
               <select id="dRhythm">
                 <option value="basic">Básico</option>
                 <option value="eighth">Subdividido</option>
@@ -283,11 +294,8 @@ details[open] summary::after{content:'−'}
                 <option value="syncopated">Sincopado</option>
               </select>
             </div>
-          </div>
-
-          <div class="ctrl-row" style="margin-top:12px">
             <div class="ctrl">
-              <div class="ctrl-label"><span class="idx">07</span>Extensão</div>
+              <label><span class="idx">07</span>Extensão</label>
               <select id="dRange">
                 <option value="7">5ª</option>
                 <option value="12" selected>8ª</option>
@@ -295,26 +303,23 @@ details[open] summary::after{content:'−'}
               </select>
             </div>
             <div class="ctrl">
-              <div class="ctrl-label"><span class="idx">08</span>Salto máximo</div>
+              <label><span class="idx">08</span>Salto máx.</label>
               <select id="dMaxLeap">
                 <option value="5">4ª</option>
                 <option value="7" selected>5ª</option>
                 <option value="12">8ª</option>
               </select>
             </div>
-          </div>
-
-          <div class="ctrl-row" style="margin-top:12px">
             <div class="ctrl">
-              <div class="ctrl-label"><span class="idx">09</span>Movimento</div>
+              <label><span class="idx">09</span>Movimento</label>
               <select id="dMotion">
-                <option value="step">Graus conjuntos</option>
+                <option value="step">Conjunto</option>
                 <option value="mixed" selected>Misto</option>
                 <option value="leap">Saltos</option>
               </select>
             </div>
             <div class="ctrl">
-              <div class="ctrl-label"><span class="idx">10</span>Contorno</div>
+              <label><span class="idx">10</span>Contorno</label>
               <select id="dContour">
                 <option value="mixed">Misto</option>
                 <option value="asc">Ascendente</option>
@@ -323,126 +328,92 @@ details[open] summary::after{content:'−'}
                 <option value="wave">Onda</option>
               </select>
             </div>
-          </div>
-
-          <div class="ctrl" style="margin-top:12px">
-            <div class="ctrl-label"><span class="idx">11</span>Foco</div>
-            <select id="dFocus">
-              <option value="scale" selected>Escala / graus</option>
-              <option value="tonic">Tônica e dominante</option>
-              <option value="thirds">3ªs</option>
-              <option value="fourths">4ªs / 5ªs</option>
-              <option value="chromatic">Cromatismo controlado</option>
-            </select>
-          </div>
-        </div>
-
-        <div id="dSlonPanel" class="hidden" style="margin-top:12px">
-          <div class="ctrl">
-            <div class="ctrl-label"><span class="idx">12</span>Padrão (semitons)</div>
-            <input id="dPattern" value="2 1 2 3">
-          </div>
-          <div class="ctrl-row" style="margin-top:12px">
-            <div class="ctrl">
-              <div class="ctrl-label"><span class="idx">13</span>Repetições</div>
-              <input id="dReps" type="number" min="1" max="8" value="2">
-            </div>
-            <div class="ctrl">
-              <div class="ctrl-label"><span class="idx">14</span>Transformação</div>
-              <select id="dTransform">
-                <option value="original">Original</option>
-                <option value="retrograde">Retrógrado</option>
-                <option value="inversion">Inversão</option>
-                <option value="retro-inv">Retrógrado-invertido</option>
+            <div class="ctrl full">
+              <label><span class="idx">11</span>Foco</label>
+              <select id="dFocus">
+                <option value="scale" selected>Escala / graus</option>
+                <option value="tonic">Tônica e dominante</option>
+                <option value="thirds">3ªs</option>
+                <option value="fourths">4ªs / 5ªs</option>
+                <option value="chromatic">Cromatismo controlado</option>
               </select>
             </div>
           </div>
         </div>
 
-        <div class="ctrl" style="margin-top:12px">
-          <div class="ctrl-label"><span class="idx">15</span>Andamento ♩ =</div>
-          <input id="dBpm" type="number" min="30" max="220" value="70">
+        <!-- Painel Slonimsky -->
+        <div id="dSlonPanel" style="display:none">
+          <div class="ctrl-grid">
+            <div class="ctrl full">
+              <label><span class="idx">12</span>Padrão (semitons)</label>
+              <input id="dPattern" value="2 1 2 3" inputmode="numeric">
+            </div>
+            <div class="ctrl">
+              <label><span class="idx">13</span>Repetições</label>
+              <input id="dReps" type="number" inputmode="numeric" min="1" max="8" value="2">
+            </div>
+            <div class="ctrl">
+              <label><span class="idx">14</span>Transformação</label>
+              <select id="dTransform">
+                <option value="original">Original</option>
+                <option value="retrograde">Retrógrado</option>
+                <option value="inversion">Inversão</option>
+                <option value="retro-inv">Retróg.-inv.</option>
+              </select>
+            </div>
+          </div>
+          <div class="range-badge">↻ Cada clique em Gerar transpõe o padrão dentro de A2–A5</div>
         </div>
 
-        <hr class="divider gold">
-
-        <div class="actions">
-          <button class="btn primary" onclick="dGenerate()">↻ Gerar</button>
-          <button class="btn" onclick="dPlay()">▶ Ouvir</button>
-          <button class="btn" onclick="dPlayRoot()">♪ Tônica</button>
-          <button class="btn" onclick="dReveal()" style="grid-column:1/-1">Revelar</button>
+        <!-- Andamento (sempre em avançado) -->
+        <div class="ctrl-grid">
+          <div class="ctrl full">
+            <label><span class="idx">15</span>Andamento ♩ =</label>
+            <input id="dBpm" type="number" inputmode="numeric" min="30" max="220" value="70">
+          </div>
         </div>
+
       </div>
-    </section>
-
-    <section class="panel output">
-      <div>
-        <div class="out-label">
-          <span>Estrutura métrica</span>
-          <span class="meta" id="dMetric">—</span>
-        </div>
-        <div class="staff-box" id="dStaff"></div>
-      </div>
-
-      <div class="quiz" id="dQuizPanel">
-        <div class="out-label"><span>O que você ouviu?</span></div>
-        <div style="color:var(--muted);font-size:12px">Gere um exercício para começar.</div>
-      </div>
-
-      <details id="dLilyBox">
-        <summary>Fonte LilyPond</summary>
-        <pre class="lily-source" id="dLilySource"></pre>
-        <div class="lily-actions">
-          <button class="btn" onclick="dCopyLily()"><span id="dCopyLabel">⧉ Copiar .ly</span></button>
-          <button class="btn" onclick="dDownloadLily()">⇩ Baixar .ly</button>
-        </div>
-      </details>
-    </section>
-
+    </details>
   </div>
 
-  <footer class="bem-footer">
-    <div class="footer-brand">
-      <div class="lg">B<em>.</em>E<em>.</em>M</div>
-      <div class="sm">Bloco de Estudos Musicais<br>Ditado Melódico · v2.4</div>
+  <!-- ── Ações ── -->
+  <div class="card">
+    <div class="actions">
+      <button class="btn primary" onclick="dGenerate()">↻ Gerar exercício</button>
+      <button class="btn" onclick="dPlay()">▶ Ouvir</button>
+      <button class="btn" onclick="dPlayRoot()">♪ Tônica</button>
+      <button class="btn" onclick="dReveal()" style="grid-column:1/-1">Revelar resposta</button>
     </div>
-    <div class="footer-wave">
-      <svg width="220" height="24" viewBox="0 0 220 24" aria-hidden="true">
-        <g stroke="currentColor" stroke-width="1" fill="none" stroke-linecap="round">
-          <line x1="6"  y1="12" x2="6"  y2="12"/>
-          <line x1="14" y1="9"  x2="14" y2="15"/>
-          <line x1="22" y1="6"  x2="22" y2="18"/>
-          <line x1="30" y1="4"  x2="30" y2="20"/>
-          <line x1="38" y1="7"  x2="38" y2="17"/>
-          <line x1="46" y1="10" x2="46" y2="14"/>
-          <line x1="54" y1="3"  x2="54" y2="21"/>
-          <line x1="62" y1="8"  x2="62" y2="16"/>
-          <line x1="70" y1="5"  x2="70" y2="19"/>
-          <line x1="78" y1="11" x2="78" y2="13"/>
-          <line x1="86" y1="2"  x2="86" y2="22"/>
-          <line x1="94" y1="7"  x2="94" y2="17"/>
-          <line x1="102" y1="10" x2="102" y2="14"/>
-          <line x1="110" y1="4"  x2="110" y2="20"/>
-          <line x1="118" y1="9"  x2="118" y2="15"/>
-          <line x1="126" y1="6"  x2="126" y2="18"/>
-          <line x1="134" y1="12" x2="134" y2="12"/>
-          <line x1="142" y1="5"  x2="142" y2="19"/>
-          <line x1="150" y1="10" x2="150" y2="14"/>
-          <line x1="158" y1="3"  x2="158" y2="21"/>
-          <line x1="166" y1="8"  x2="166" y2="16"/>
-          <line x1="174" y1="11" x2="174" y2="13"/>
-          <line x1="182" y1="6"  x2="182" y2="18"/>
-          <line x1="190" y1="9"  x2="190" y2="15"/>
-          <line x1="198" y1="4"  x2="198" y2="20"/>
-          <line x1="206" y1="10" x2="206" y2="14"/>
-          <line x1="214" y1="12" x2="214" y2="12"/>
-        </g>
-      </svg>
+  </div>
+
+  <!-- ── Pauta ── -->
+  <div class="card">
+    <div class="card-title">
+      <span>Estrutura métrica</span>
+      <span class="meta locked" id="dMetric">—</span>
     </div>
-    <div class="footer-tag">
-      Ouvir<span class="sep">·</span>Entender<span class="sep">·</span>Transformar
+    <div class="staff-outer">
+      <div class="staff-wrap" id="dStaff"></div>
+      <div class="staff-lock" id="dStaffLock">🔒 ouça e adivinhe</div>
     </div>
-  </footer>
+  </div>
+
+  <!-- ── Quiz ── -->
+  <div class="card" id="dQuizPanel">
+    <div class="card-title"><span>O que você ouviu?</span></div>
+    <div class="hint">Gere um exercício para começar.</div>
+  </div>
+
+  <!-- ── LilyPond ── -->
+  <details class="lily" id="dLilyBox">
+    <summary>Fonte LilyPond</summary>
+    <pre class="lily-source" id="dLilySource"></pre>
+    <div class="lily-actions">
+      <button class="btn" onclick="dCopyLily()"><span id="dCopyLabel">⧉ Copiar .ly</span></button>
+      <button class="btn" onclick="dDownloadLily()">⇩ Baixar .ly</button>
+    </div>
+  </details>
 
 </div>
 
@@ -464,13 +435,14 @@ function playNote(freq,start,duration){const o=audioCtx.createOscillator(),g=aud
 </script>
 
 <script id="bem-module">
-// ── MÓDULO DITADO MELÓDICO v2.4 ──
-// v2.4 — patch Dot + foco intervalar:
-//   • vfDurationParts() substitui vfDuration(); VexFlow 4.2.2 (CJS) não
-//     adiciona Dot a partir de strings com sufixo 'd', então o ponto é
-//     aplicado explicitamente via VF.Dot modifier.
-//   • <select id="dFocus"> reintroduzido; candidateSequence aplica filtro
-//     real de altura conforme o foco.
+// ── MÓDULO DITADO MELÓDICO v2.8 ──
+// v2.8 — Parâmetros em dois níveis:
+//   • Básicos (sempre visíveis): Modo, Tonalidade, Escala, Compasso.
+//   • Avançados (dentro de <details>): Compassos, Ritmo, Extensão,
+//     Salto máx., Movimento, Contorno, Foco, Padrão/Reps/Transform
+//     (Slonimsky) e Andamento.
+//   O DOM não mudou de identidade — todos os IDs continuam os mesmos,
+//   então dSetMode() e a leitura dos valores funcionam sem alteração.
 (function(){
   const SCALES={major:[0,2,4,5,7,9,11],minor:[0,2,3,5,7,8,10],harmonic:[0,2,3,5,7,8,11],melodic:[0,2,3,5,7,9,11],pentMajor:[0,2,4,7,9],pentMinor:[0,3,5,7,10]};
   const DEG=['1','b2','2','b3','3','4','#4','5','b6','6','b7','7'];
@@ -479,6 +451,37 @@ function playNote(freq,start,duration){const o=audioCtx.createOscillator(),g=aud
   const FALLBACK_LETTER=[0,0,1,2,2,3,3,4,4,5,6,6];
   const TONICS=['C','C#','D','Eb','E','F','F#','G','G#','A','Bb','B'];
   const $=id=>document.getElementById(id);
+
+  const TESSITURA_LOW  = 45;   // A2
+  const TESSITURA_HIGH = 81;   // A5
+
+  const MAJOR_SIG_BY_PC = {
+    0:  { sig:'C',  n: 0  },
+    1:  { sig:'Db', n:-5  },
+    2:  { sig:'D',  n: 2  },
+    3:  { sig:'Eb', n:-3  },
+    4:  { sig:'E',  n: 4  },
+    5:  { sig:'F',  n:-1  },
+    6:  { sig:'F#', n: 6  },
+    7:  { sig:'G',  n: 1  },
+    8:  { sig:'Ab', n:-4  },
+    9:  { sig:'A',  n: 3  },
+    10: { sig:'Bb', n:-2  },
+    11: { sig:'B',  n: 5  }
+  };
+  const SHARP_ORDER = ['F','C','G','D','A','E','B'];
+  const FLAT_ORDER  = ['B','E','A','D','G','C','F'];
+
+  function keySigInfo(tonicName, scaleType){
+    const isMinor = ['minor','harmonic','melodic','pentMinor'].includes(scaleType);
+    const tonicPc = BEM.pcOf(tonicName);
+    const majorPc = isMinor ? (tonicPc + 3) % 12 : tonicPc;
+    const info = MAJOR_SIG_BY_PC[majorPc] || { sig:'C', n:0 };
+    const altered = {};
+    if(info.n > 0){ for(let i=0;i<info.n;i++) altered[SHARP_ORDER[i]] = 1; }
+    else if(info.n < 0){ for(let i=0;i<-info.n;i++) altered[FLAT_ORDER[i]] = -1; }
+    return { vexKey: info.sig, altered };
+  }
 
   const METER_STRUCT = {
     '2/4': { groups:2, groupDur:1,   kind:'simple',   subdivisions:2, accents:[1,0] },
@@ -505,33 +508,10 @@ function playNote(freq,start,duration){const o=audioCtx.createOscillator(),g=aud
   };
 
   const BAR_OVERRIDES = {
-    '4/4': {
-      syncopated: [
-        [.5,1,.5,1,1],
-        [.5,1.5,1,1],
-        [1,.5,1.5,1],
-        [1,1,.5,1.5]
-      ]
-    },
-    '6/8': {
-      syncopated: [
-        [.5,1.5,.5,.5],
-        [.5,.5,1.5,.5],
-        [.5,1,1,.5]
-      ]
-    },
-    '9/8': {
-      syncopated: [
-        [.5,1.5,.5,1.5,.5],
-        [.5,1,.5,.5,1.5,.5]
-      ]
-    },
-    '12/8': {
-      syncopated: [
-        [.5,1.5,.5,.5,1.5,.5,.5,.5],
-        [1.5,.5,.5,1,.5,.5,1.5]
-      ]
-    }
+    '4/4': { syncopated: [[.5,1,.5,1,1],[.5,1.5,1,1],[1,.5,1.5,1],[1,1,.5,1.5]] },
+    '6/8': { syncopated: [[.5,1.5,.5,.5],[.5,.5,1.5,.5],[.5,1,1,.5]] },
+    '9/8': { syncopated: [[.5,1.5,.5,1.5,.5],[.5,1,.5,.5,1.5,.5]] },
+    '12/8':{ syncopated: [[.5,1.5,.5,.5,1.5,.5,.5,.5],[1.5,.5,.5,1,.5,.5,1.5]] }
   };
 
   function almostEqual(a,b){ return Math.abs(a-b) < 1e-9; }
@@ -618,6 +598,8 @@ function playNote(freq,start,duration){const o=audioCtx.createOscillator(),g=aud
   }
   function accToLily(u){return u==='♯'?'is':u==='♭'?'es':u==='𝄪'?'isis':u==='𝄫'?'eses':''}
   function accToVex(u){return u==='♯'?'#':u==='♭'?'b':u==='𝄪'?'##':u==='𝄫'?'bb':''}
+  function accToNum(u){return u==='♯'?1:u==='♭'?-1:u==='𝄪'?2:u==='𝄫'?-2:0}
+
   function lilyNoteName(offset, tonic, scale, midi){
     const name = spellNote(offset, tonic, scale);
     const letter = name[0].toLowerCase(), acc = accToLily(name.slice(1));
@@ -632,13 +614,6 @@ function playNote(freq,start,duration){const o=audioCtx.createOscillator(),g=aud
   }
   function lilyDuration(b){return b===.25?'16':b===.5?'8':b===.75?'8.':b===1?'4':b===1.5?'4.':b===2?'2':b===3?'2.':b===4?'1':'4'}
 
-  // ─────────────────────────────────────────────────────────────
-  //  v2.4 — vfDurationParts() substitui vfDuration()
-  //  VexFlow 4.2.2 (CJS via CDN) aceita a string 'qd' para contar ticks
-  //  mas NÃO adiciona o Dot modifier — desenha o notehead sem o ponto.
-  //  Aqui devolvemos base + dots separadamente; os modifiers são
-  //  aplicados explicitamente em dRenderStaff.
-  // ─────────────────────────────────────────────────────────────
   function vfDurationParts(b){
     const map = {
       0.25:  { base:'16', dots:0 },
@@ -655,14 +630,39 @@ function playNote(freq,start,duration){const o=audioCtx.createOscillator(),g=aud
     return map[b] || { base:'q', dots:0 };
   }
 
-  function nearestScaleOffset(deg, scale){
-    let best = scale[0], dist = 999;
-    for(let oct=-1; oct<=1; oct++) for(const v of scale.map(x=>x+12*oct)){
-      const d = Math.abs(v - scale[deg % scale.length]);
-      if(d < dist){ dist = d; best = v; }
+  function buildPitchPool(scale, baseMidi, chromatic){
+    const pool = [];
+    const seen = new Set();
+    const add = v => {
+      const midi = baseMidi + v;
+      if(midi < TESSITURA_LOW || midi > TESSITURA_HIGH) return;
+      if(seen.has(v)) return;
+      seen.add(v); pool.push(v);
+    };
+    for(let oct=-2; oct<=2; oct++){
+      for(const k of scale){ add(k + 12*oct); }
     }
-    return best;
+    if(chromatic){
+      const base = pool.slice();
+      for(const v of base){ add(v + 1); add(v - 1); }
+    }
+    pool.sort((a,b)=>a-b);
+    return pool;
   }
+
+  function nearestPoolOffset(deg, scale, pool){
+    const targetPc = ((scale[deg % scale.length] % 12) + 12) % 12;
+    const targetVal = scale[deg % scale.length];
+    let best = null, bestDist = Infinity;
+    for(const v of pool){
+      const vPc = ((v % 12) + 12) % 12;
+      if(vPc !== targetPc) continue;
+      const d = Math.abs(v - targetVal);
+      if(d < bestDist){ bestDist = d; best = v; }
+    }
+    return best !== null ? best : pool[0];
+  }
+
   function scaleIndexOf(v, scale){
     const oct = Math.floor(v / 12);
     const pc = ((v % 12) + 12) % 12;
@@ -671,33 +671,15 @@ function playNote(freq,start,duration){const o=audioCtx.createOscillator(),g=aud
     return oct * scale.length + k;
   }
 
-  // ─────────────────────────────────────────────────────────────
-  //  candidateSequence — agora com parâmetro `focus`
-  //
-  //   scale      — comportamento original (sem filtro de intervalo)
-  //   tonic      — peso forte em tônica e dominante; quando disponível,
-  //                escolhe entre essas duas classes antes das demais
-  //   thirds     — restringe a saltos de 3ª (3-4 semitons)
-  //   fourths    — restringe a saltos de 4ª/5ª justas (5-7 semitons)
-  //   chromatic  — expande o pool de alturas com semitons adjacentes
-  //                às notas da escala; aceita notas fora da escala
-  // ─────────────────────────────────────────────────────────────
   function candidateSequence(slotCount, scale, startDeg, endDeg, range, maxLeap, motion, contour, focus){
     focus = focus || 'scale';
+    const baseMidi = 60 + tonicPc();
+    const pitchPool = buildPitchPool(scale, baseMidi, focus === 'chromatic');
+    if(!pitchPool.length) return null;
 
-    // pool base: notas da escala em três oitavas
-    let pitchPool = [];
-    for(let k=0; k<scale.length; k++) for(let oct=-1; oct<=1; oct++){
-      pitchPool.push(scale[k] + 12*oct);
-    }
-    // pool cromático: acrescenta semitons adjacentes
-    if(focus === 'chromatic'){
-      const extras = new Set();
-      for(const v of pitchPool){ extras.add(v + 1); }
-      pitchPool = pitchPool.concat([...extras]);
-    }
+    const startOff = nearestPoolOffset(startDeg, scale, pitchPool);
+    let seq = [startOff], direction = 0;
 
-    let seq = [nearestScaleOffset(startDeg, scale)], direction = 0;
     for(let i=1; i<slotCount; i++){
       const choices = [];
       const iPrev = scaleIndexOf(seq[i-1], scale);
@@ -705,36 +687,27 @@ function playNote(freq,start,duration){const o=audioCtx.createOscillator(),g=aud
         const d = v - seq[i-1];
         if(d === 0 || Math.abs(d) > range) continue;
 
-        // restrições de movimento (por grau da escala quando possível)
         const iNew = scaleIndexOf(v, scale);
         if(iPrev !== null && iNew !== null){
           const stepSize = Math.abs(iNew - iPrev);
           if(motion === 'step' && stepSize > 1) continue;
           if(motion === 'leap' && stepSize < 2) continue;
         } else {
-          // cromático: usa semitons como aproximação
           if(motion === 'step' && Math.abs(d) > 2) continue;
           if(motion === 'leap' && Math.abs(d) < 2) continue;
         }
 
-        // foco intervalar
         if(focus === 'thirds' && ![3,4].includes(Math.abs(d))) continue;
         if(focus === 'fourths' && ![5,7].includes(Math.abs(d))) continue;
         if(focus === 'tonic'){
-          // tônica (0, ±12) ou dominante (7, ±12) em relação ao início
           const pitchClass = ((v % 12) + 12) % 12;
-          const tonicPcLocal = ((scale[0]) % 12 + 12) % 12;
-          const domPcLocal = ((scale[0] + 7) % 12 + 12) % 12;
-          // em cada oitava, comparar com tônica/dominante da escala
           const isTonic = scale.indexOf(pitchClass) === 0;
           const isDominant = scale.indexOf(pitchClass) === (scale.length >= 5 ? 4 : 3);
           if(!isTonic && !isDominant){
-            // se houver alternativa viável, rejeitar; senão aceitar
             if(Math.random() < 0.75) continue;
           }
         }
 
-        // contorno
         if(contour === 'asc'  && d < 0) continue;
         if(contour === 'desc' && d > 0) continue;
         if(contour === 'arch' && i < slotCount/2 && d < 0) continue;
@@ -749,7 +722,8 @@ function playNote(freq,start,duration){const o=audioCtx.createOscillator(),g=aud
       direction = Math.sign(pick - seq[i-1]);
       seq.push(pick);
     }
-    const finalTarget = nearestScaleOffset(endDeg, scale), diff = finalTarget - seq[seq.length-1];
+    const finalTarget = nearestPoolOffset(endDeg, scale, pitchPool);
+    const diff = finalTarget - seq[seq.length-1];
     if(Math.abs(diff) > maxLeap) return null;
     seq[seq.length-1] = finalTarget;
     if(Math.max(...seq) - Math.min(...seq) > range) return null;
@@ -777,7 +751,20 @@ function playNote(freq,start,duration){const o=audioCtx.createOscillator(),g=aud
         while(a.length < targetCount) a.push(base[i++ % base.length]);
       }
     }
-    return a;
+    const baseMidi = 60 + tonicPc();
+    const loOff = TESSITURA_LOW  - baseMidi;
+    const hiOff = TESSITURA_HIGH - baseMidi;
+    const seqMin = Math.min(...a);
+    const seqMax = Math.max(...a);
+    const shiftLo = loOff - seqMin;
+    const shiftHi = hiOff - seqMax;
+
+    if(shiftHi < shiftLo){
+      const center = Math.round((loOff + hiOff - seqMin - seqMax) / 2);
+      return a.map(x => Math.max(loOff, Math.min(hiOff, x + center)));
+    }
+    const shift = shiftLo + Math.floor(Math.random() * (shiftHi - shiftLo + 1));
+    return a.map(x => x + shift);
   }
 
   function tonicPc(){ return BEM.pcOf(TONICS[Number($('dKey').value) || 0]); }
@@ -790,7 +777,7 @@ function playNote(freq,start,duration){const o=audioCtx.createOscillator(),g=aud
     const bars  = Math.max(1, Number($('dBars').value) || 1);
     const S = METER_STRUCT[meter];
     if(!Array.isArray(patterns) || patterns.length !== bars){
-      throw new Error('Padrões rítmicos ausentes ou incompatíveis com o número de compassos.');
+      throw new Error('Padrões rítmicos ausentes ou incompatíveis.');
     }
     const eventsPerBar = [];
     let noteIndex = 0;
@@ -812,16 +799,17 @@ function playNote(freq,start,duration){const o=audioCtx.createOscillator(),g=aud
       eventsPerBar.push(cells);
     }
     if(noteIndex !== notes.length){
-      throw new Error(`Modelo rítmico/melódico desalinhado: ${noteIndex} ataques para ${notes.length} notas.`);
+      throw new Error(`Modelo desalinhado: ${noteIndex} vs ${notes.length}.`);
     }
+    const keySig = keySigInfo(tonicName, scaleType);
     return {
-      tonicName, scaleType, meter, motor, bars, S,
+      tonicName, scaleType, meter, motor, bars, S, keySig,
       metricGroups: metricGroupsForBar(meter),
       eventsPerBar
     };
   }
 
-  let dMode = 'melody', dCurrent = null, dLoopTimer = null, dRevealed = false;
+  let dMode = 'melody', dCurrent = null, dRevealed = false;
 
   function dSetMode(m){
     dMode = m;
@@ -830,8 +818,16 @@ function playNote(freq,start,duration){const o=audioCtx.createOscillator(),g=aud
   }
   window.dSetMode = dSetMode;
 
+  function setStaffBlurred(blurred){
+    const el = $('dStaff');
+    if(!el) return;
+    el.classList.toggle('blurred', !!blurred);
+    const metric = $('dMetric');
+    if(metric) metric.classList.toggle('locked', !!blurred);
+  }
+  window.dSetStaffBlur = setStaffBlurred;
+
   function dGenerate(){
-    if(dLoopTimer){ clearTimeout(dLoopTimer); dLoopTimer = null; }
     dRevealed = false;
     let notes = null, tries = 0;
     const meter = $('dMeter').value;
@@ -847,17 +843,23 @@ function playNote(freq,start,duration){const o=audioCtx.createOscillator(),g=aud
       const range = Number($('dRange').value), maxLeap = Number($('dMaxLeap').value);
       const motion = $('dMotion').value, contour = $('dContour').value;
       const focus = $('dFocus').value;
-      while(!notes && tries++ < 600) notes = candidateSequence(slotCount, scale, 0, 0, range, maxLeap, motion, contour, focus);
+      while(!notes && tries++ < 600){
+        notes = candidateSequence(slotCount, scale, 0, 0, range, maxLeap, motion, contour, focus);
+      }
     }
     if(!notes){
-      $('dQuizPanel').innerHTML = '<div class="out-label"><span>O que você ouviu?</span></div><div style="color:var(--muted);font-size:12px">Não foi possível gerar — afrouxe um parâmetro.</div>';
+      const msg = dMode === 'slonimsky'
+        ? 'Padrão grande demais para A2–A5. Reduza as repetições ou o padrão.'
+        : 'Não foi possível gerar — afrouxe um parâmetro.';
+      $('dQuizPanel').innerHTML = '<div class="card-title"><span>O que você ouviu?</span></div><div class="hint">' + msg + '</div>';
       return;
     }
     dCurrent = { notes, model: buildModel(notes, patterns) };
     const mg = dCurrent.model.metricGroups.map(g => (g.duration === 1 ? '♩' : '♩.')).join(' + ');
-    $('dMetric').textContent = dCurrent.model.meter + ' — ' + mg;
+    $('dMetric').textContent = dCurrent.model.meter + ' · ' + mg;
     dRenderStaff();
     dRenderQuiz();
+    setStaffBlurred(true);
   }
   window.dGenerate = dGenerate;
 
@@ -867,21 +869,47 @@ function playNote(freq,start,duration){const o=audioCtx.createOscillator(),g=aud
       : new Vex.Flow.Fraction(1, 4);
   }
 
+  function visibleAccidental(noteName, alteredMap){
+    const { base, acc } = BEM.splitSpelling(noteName);
+    const letter = base.toUpperCase();
+    const sigAcc = alteredMap[letter] || 0;
+    const noteAcc = accToNum(acc);
+    if(noteAcc === sigAcc) return '';
+    if(noteAcc === 0 && sigAcc !== 0) return 'n';
+    return accToVex(acc);
+  }
+
   function dRenderStaff(){
     const host = $('dStaff'); host.innerHTML = '';
     const model = dCurrent.model;
     try{
       const VF = Vex.Flow;
       const mp = model.meter.split('/').map(Number);
-      const perBarW = 320, w = model.bars * perBarW + 30, h = 190;
+      const perBarW = 240;
+      const totalW = model.bars * perBarW + 20;
+      const h = 180;
       const renderer = new VF.Renderer(host, VF.Renderer.Backends.SVG);
-      renderer.resize(w, h);
+      renderer.resize(totalW, h);
       const ctx = renderer.getContext();
 
+      const BarlineType = (VF.Barline && VF.Barline.type) || {};
+      const NONE  = (BarlineType.NONE  !== undefined) ? BarlineType.NONE  : 7;
+      const END   = (BarlineType.END   !== undefined) ? BarlineType.END   : 3;
+
       model.eventsPerBar.forEach((cells, bi) => {
-        const x = 15 + bi * perBarW;
-        const stave = new VF.Stave(x, 55, perBarW - 12);
-        if(bi === 0) stave.addClef('treble').addTimeSignature(model.meter);
+        const x = 10 + bi * perBarW;
+        const stave = new VF.Stave(x, 50, perBarW);
+
+        if(bi === 0){
+          stave.addClef('treble')
+               .addKeySignature(model.keySig.vexKey)
+               .addTimeSignature(model.meter);
+        } else {
+          try { stave.setBegBarType(NONE); } catch(e){}
+        }
+        if(bi === model.bars - 1){
+          try { stave.setEndBarType(END); } catch(e){}
+        }
         stave.setContext(ctx).draw();
 
         const tickables = [];
@@ -889,7 +917,6 @@ function playNote(freq,start,duration){const o=audioCtx.createOscillator(),g=aud
         let pendingTie = null;
 
         for(const c of cells){
-          // v2.4 — separar base e pontos; aplicar VF.Dot explicitamente
           const { base: durBase, dots } = vfDurationParts(c.dur);
 
           if(c.isRest){
@@ -906,17 +933,20 @@ function playNote(freq,start,duration){const o=audioCtx.createOscillator(),g=aud
             continue;
           }
 
-          const name = spellNote(c.offset, model.tonicName, model.scale);
+          const name = spellNote(c.offset, model.tonicName, model.scaleType);
           const { base, acc } = BEM.splitSpelling(name);
-          const vexAcc = accToVex(acc);
+          const vexAccForKey = accToVex(acc);
           const oct = Math.floor((60 + tonicPc() + c.offset) / 12) - 1;
 
           const n = new VF.StaveNote({
-            keys: [ base.toLowerCase() + vexAcc + '/' + oct ],
+            keys: [ base.toLowerCase() + vexAccForKey + '/' + oct ],
             duration: durBase,
             clef: 'treble'
           });
-          if(vexAcc) n.addModifier(new VF.Accidental(vexAcc), 0);
+
+          const drawAcc = visibleAccidental(name, model.keySig.altered);
+          if(drawAcc) n.addModifier(new VF.Accidental(drawAcc), 0);
+
           for(let d = 0; d < dots; d++){
             try { n.addModifier(new VF.Dot(), 0); } catch(e){}
           }
@@ -930,11 +960,10 @@ function playNote(freq,start,duration){const o=audioCtx.createOscillator(),g=aud
 
         const voice = new VF.Voice({ num_beats: mp[0], beat_value: mp[1] }).setStrict(false);
         voice.addTickables(tickables);
-        new VF.Formatter().joinVoices([voice]).format([voice], perBarW - 100);
 
-        // Beams antes do voice.draw: o construtor de VF.Beam associa
-        // this.beam em cada StaveNote; o draw da nota consulta esse campo
-        // para decidir se desenha a bandeira individual.
+        const fmtWidth = (bi === 0) ? perBarW - 100 : perBarW - 30;
+        new VF.Formatter().joinVoices([voice]).format([voice], fmtWidth);
+
         const beamGroups = Array.from(
           { length: model.S.groups },
           () => groupFraction(model.S.kind)
@@ -973,15 +1002,15 @@ function playNote(freq,start,duration){const o=audioCtx.createOscillator(),g=aud
     model.eventsPerBar.forEach(cells => {
       cells.forEach(c => {
         if(c.isRest){ body += lilyDuration(c.dur) + 'r '; return; }
-        const n = lilyNoteName(c.offset, model.tonicName, model.scale, 60 + tonicPc() + c.offset);
+        const n = lilyNoteName(c.offset, model.tonicName, model.scaleType, 60 + tonicPc() + c.offset);
         body += n + lilyDuration(c.dur) + (c.tieOut ? '~ ' : ' ');
       });
       body += '| ';
     });
-    return `\\version "2.24.0"\n\\header { title = "B.E.M. Ditado Melódico" }\n\\score {\n  { ${lilyKeySpec(model.tonicName, model.scale)} \\time ${model.meter} ${body.trim()} }\n  \\layout { }\n  \\midi { \\tempo 4 = ${Math.max(30, parseInt($('dBpm').value) || 70)} }\n}`;
+    return `\\version "2.24.0"\n\\header { title = "B.E.M. Ditado Melódico" }\n\\score {\n  { ${lilyKeySpec(model.tonicName, model.scaleType)} \\time ${model.meter} ${body.trim()} }\n  \\layout { }\n  \\midi { \\tempo 4 = ${Math.max(30, parseInt($('dBpm').value) || 70)} }\n}`;
   }
   window.dShowLily    = () => { $('dLilyBox').open = true; $('dLilySource').textContent = dToLily(); };
-  window.dCopyLily    = async () => { await navigator.clipboard.writeText(dToLily()); $('dCopyLabel').textContent = '✓ Copiado'; setTimeout(()=>$('dCopyLabel').textContent='⧉ Copiar .ly',1200); };
+  window.dCopyLily    = async () => { try{ await navigator.clipboard.writeText(dToLily()); $('dCopyLabel').textContent = '✓ Copiado'; setTimeout(()=>$('dCopyLabel').textContent='⧉ Copiar .ly',1200); }catch(e){} };
   window.dDownloadLily= () => { const blob = new Blob([dToLily()],{type:'text/plain;charset=utf-8'}), a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'bem-ditado.ly'; a.click(); URL.revokeObjectURL(a.href); };
 
   function flattenEvents(){
@@ -1010,7 +1039,12 @@ function playNote(freq,start,duration){const o=audioCtx.createOscillator(),g=aud
   }
   window.dPlay     = dPlay;
   window.dPlayRoot = () => { initAudio(); playNote(midiToFreq(60 + tonicPc()), audioCtx.currentTime, 1.5); };
-  window.dReveal   = () => { if(!dCurrent) return; dRevealed = true; dRenderQuiz(true); };
+  window.dReveal   = () => {
+    if(!dCurrent) return;
+    dRevealed = true;
+    setStaffBlurred(false);
+    dRenderQuiz(true);
+  };
 
   function degreeOf(offset){ return DEG[((offset % 12) + 12) % 12]; }
   function rhythmSymbol(dur){
@@ -1030,13 +1064,13 @@ function playNote(freq,start,duration){const o=audioCtx.createOscillator(),g=aud
   function dRenderQuiz(forceReveal){
     const n = dCurrent.notes, correct = n.join(',');
     const opts = distractors(n).sort(() => Math.random() - .5);
-    const answerBlock = `<div class="answer-block" style="${dRevealed || forceReveal ? '' : 'display:none'}" id="dAnswerBlock">
-      <div class="out-label"><span>Resposta</span></div>
+    const answerBlock = `<div class="answer" style="${dRevealed || forceReveal ? '' : 'display:none'}" id="dAnswerBlock">
+      <div class="card-title" style="margin-bottom:8px"><span>Resposta</span></div>
       <div class="answer-degrees">${n.map(x => '<span class="d">'+degreeOf(x)+'</span>').join(' – ')}</div>
       <div class="chips">${flattenEvents().map(e => `<span class="chip">${rhythmSymbol(e.dur)}</span>`).join('')}</div>
     </div>`;
     $('dQuizPanel').innerHTML = `
-      <div class="out-label"><span>O que você ouviu?</span></div>
+      <div class="card-title"><span>O que você ouviu?</span></div>
       <div id="dOpts">${opts.map(o => `<button class="quiz-option" data-value="${o}">${o.split(',').map(x => degreeOf(parseInt(x))).join(' – ')}</button>`).join('')}</div>
       ${answerBlock}`;
     document.querySelectorAll('#dOpts .quiz-option').forEach(b => b.onclick = () => {
@@ -1047,11 +1081,13 @@ function playNote(freq,start,duration){const o=audioCtx.createOscillator(),g=aud
         document.querySelectorAll('#dOpts .quiz-option').forEach(x => { if(x.dataset.value === correct) x.classList.add('correct'); });
       }
       $('dAnswerBlock').style.display = 'block';
+      setStaffBlurred(false);
     });
   }
 
   function dInit(){
     TONICS.forEach((n, i) => $('dKey').add(new Option(n, i)));
+    dSetMode('melody');
     dGenerate();
   }
   window.dInit = dInit;
