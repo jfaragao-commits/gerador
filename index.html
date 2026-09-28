@@ -81,7 +81,6 @@ select{
 }
 select:focus,input:focus{outline:0;border-color:var(--gold)}
 
-/* ── Parâmetros avançados (details) ── */
 details.advanced{
   margin:14px 0 0;border:0;background:transparent;padding:0;
 }
@@ -278,7 +277,6 @@ details.lily[open] summary::after{content:'−'}
       <summary>⚙ Parâmetros avançados</summary>
       <div class="adv-body">
 
-        <!-- Painel melódico -->
         <div id="dMelodyPanel">
           <div class="ctrl-grid">
             <div class="ctrl">
@@ -341,7 +339,6 @@ details.lily[open] summary::after{content:'−'}
           </div>
         </div>
 
-        <!-- Painel Slonimsky -->
         <div id="dSlonPanel" style="display:none">
           <div class="ctrl-grid">
             <div class="ctrl full">
@@ -365,7 +362,6 @@ details.lily[open] summary::after{content:'−'}
           <div class="range-badge">↻ Cada clique em Gerar transpõe o padrão dentro de A2–A5</div>
         </div>
 
-        <!-- Andamento (sempre em avançado) -->
         <div class="ctrl-grid">
           <div class="ctrl full">
             <label><span class="idx">15</span>Andamento ♩ =</label>
@@ -428,21 +424,64 @@ window.BEM = {
     return base+(d>0?'♯':'♭');
   }
 };
-let audioCtx=null;
-function initAudio(){ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); }
-function midiToFreq(m){return 440*Math.pow(2,(m-69)/12)}
-function playNote(freq,start,duration){const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.value=freq;g.gain.setValueAtTime(.0001,start);g.gain.exponentialRampToValueAtTime(.18,start+.015);g.gain.exponentialRampToValueAtTime(.0001,start+duration);o.connect(g).connect(audioCtx.destination);o.start(start);o.stop(start+duration+.02)}
+
+// ── Áudio (v2.8a) ──
+// Volume aumentado (peak 0.45) + harmônico uma 8ª acima em triangle
+// para dar corpo. masterGain é ponto único de controle geral.
+let audioCtx = null;
+let masterGain = null;
+
+function initAudio(){
+  if(!audioCtx){
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = 1.0;
+    masterGain.connect(audioCtx.destination);
+  }
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+function midiToFreq(m){ return 440 * Math.pow(2, (m - 69) / 12); }
+
+function playNote(freq, start, duration){
+  const fundamental = audioCtx.createOscillator();
+  const harmonic    = audioCtx.createOscillator();
+  const gFund = audioCtx.createGain();
+  const gHarm = audioCtx.createGain();
+
+  fundamental.type = 'sine';
+  fundamental.frequency.value = freq;
+
+  harmonic.type = 'triangle';
+  harmonic.frequency.value = freq * 2;
+
+  const peak    = 0.45;
+  const attack  = 0.012;
+  const release = Math.max(0.06, duration * 0.35);
+
+  gFund.gain.setValueAtTime(0.0001, start);
+  gFund.gain.exponentialRampToValueAtTime(peak, start + attack);
+  gFund.gain.setValueAtTime(peak, start + Math.max(attack, duration - release));
+  gFund.gain.exponentialRampToValueAtTime(0.0001, start + duration + 0.02);
+
+  const peakH = peak * 0.22;
+  gHarm.gain.setValueAtTime(0.0001, start);
+  gHarm.gain.exponentialRampToValueAtTime(peakH, start + attack);
+  gHarm.gain.setValueAtTime(peakH, start + Math.max(attack, duration - release));
+  gHarm.gain.exponentialRampToValueAtTime(0.0001, start + duration + 0.02);
+
+  fundamental.connect(gFund).connect(masterGain);
+  harmonic.connect(gHarm).connect(masterGain);
+
+  fundamental.start(start);
+  harmonic.start(start);
+  fundamental.stop(start + duration + 0.04);
+  harmonic.stop(start + duration + 0.04);
+}
 </script>
 
 <script id="bem-module">
 // ── MÓDULO DITADO MELÓDICO v2.8 ──
-// v2.8 — Parâmetros em dois níveis:
-//   • Básicos (sempre visíveis): Modo, Tonalidade, Escala, Compasso.
-//   • Avançados (dentro de <details>): Compassos, Ritmo, Extensão,
-//     Salto máx., Movimento, Contorno, Foco, Padrão/Reps/Transform
-//     (Slonimsky) e Andamento.
-//   O DOM não mudou de identidade — todos os IDs continuam os mesmos,
-//   então dSetMode() e a leitura dos valores funcionam sem alteração.
 (function(){
   const SCALES={major:[0,2,4,5,7,9,11],minor:[0,2,3,5,7,8,10],harmonic:[0,2,3,5,7,8,11],melodic:[0,2,3,5,7,9,11],pentMajor:[0,2,4,7,9],pentMinor:[0,3,5,7,10]};
   const DEG=['1','b2','2','b3','3','4','#4','5','b6','6','b7','7'];
